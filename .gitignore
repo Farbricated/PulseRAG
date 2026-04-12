@@ -1,4 +1,5 @@
 .streamlit/secrets.toml
+chroma_db/
 *.db
 *.pkl
 *.csv

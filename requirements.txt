@@ -1,8 +1,9 @@
 groq>=0.9.0
-qdrant-client>=1.9.0
+chromadb>=0.5.0
 sentence-transformers>=2.7.0
 scikit-learn>=1.4.0
 pandas>=2.0.0
 numpy>=1.26.0
 streamlit>=1.35.0
 evidently>=0.4.30
+xgboost>=2.0.0
