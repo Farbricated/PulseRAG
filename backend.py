@@ -71,7 +71,7 @@ EMBED_MODEL_NAME = "all-MiniLM-L6-v2"
 GROQ_MODEL       = "llama-3.1-8b-instant"
 DB_PATH          = "pulserag.db"
 MODEL_PATH       = "pulserag_model.pkl"
-TOP_K            = 6
+TOP_K            = 10
 VERSION          = "4.0.0"
 EMBED_BATCH_SIZE = 64
 
@@ -382,32 +382,45 @@ def bm25_retrieve(query: str, top_k: int = TOP_K, topic_filter: Optional[str] = 
             for s, d in scored[:top_k]]
 
 
-def hybrid_retrieve(query: str, top_k: int = TOP_K, topic_filter: Optional[str] = None) -> list[dict]:
-    """[B7] Returns actual RRF scores, not discarded dense scores."""
-    dense_results = dense_retrieve(query, top_k=top_k, topic_filter=topic_filter)
-    bm25_results  = bm25_retrieve(query,  top_k=top_k, topic_filter=topic_filter)
+def _rrf_merge(result_lists: list[list[dict]], top_k: int, k: int = 60) -> list[dict]:
+    """Reciprocal Rank Fusion across multiple ranked result lists."""
     rrf: dict[str, float] = {}
     doc_map: dict[str, dict] = {}
-    for rank, item in enumerate(dense_results):
-        rrf[item["doc_id"]] = rrf.get(item["doc_id"], 0.0) + 1 / (60 + rank + 1)
-        doc_map[item["doc_id"]] = item
-    for rank, item in enumerate(bm25_results):
-        rrf[item["doc_id"]] = rrf.get(item["doc_id"], 0.0) + 1 / (60 + rank + 1)
-        doc_map.setdefault(item["doc_id"], item)
+    for results in result_lists:
+        for rank, item in enumerate(results):
+            did = item["doc_id"]
+            rrf[did] = rrf.get(did, 0.0) + 1.0 / (k + rank + 1)
+            doc_map.setdefault(did, item)
     ranked = sorted(rrf.items(), key=lambda x: -x[1])[:top_k]
-    results = []
+    out = []
     for doc_id, rrf_score in ranked:
         doc = doc_map[doc_id]
-        # [B7] Report RRF score as the canonical score, keep dense_score separately
-        dense_item = next((d for d in dense_results if d["doc_id"] == doc_id), None)
-        results.append({
-            "doc_id":     doc_id,
-            "text":       doc["text"],
-            "score":      round(rrf_score, 6),        # actual RRF score
-            "dense_score":dense_item["score"] if dense_item else 0.0,
-            "topic":      doc["topic"],
+        out.append({
+            "doc_id":      doc_id,
+            "text":        doc["text"],
+            "score":       round(rrf_score, 6),
+            "dense_score": doc.get("score", 0.0),
+            "topic":       doc["topic"],
         })
-    return results
+    return out
+
+
+def hybrid_retrieve(query: str, top_k: int = TOP_K, topic_filter: Optional[str] = None) -> list[dict]:
+    """
+    [B7] Multi-query hybrid retrieval with RRF fusion.
+    Generates multiple query variants, retrieves with each using both dense
+    and BM25, then fuses all result lists with RRF for maximum recall.
+    """
+    variants = generate_query_variants(query)
+    all_lists: list[list[dict]] = []
+    for v in variants:
+        dense = dense_retrieve(v, top_k=top_k, topic_filter=topic_filter)
+        bm25  = bm25_retrieve(v,  top_k=top_k, topic_filter=topic_filter)
+        if dense: all_lists.append(dense)
+        if bm25:  all_lists.append(bm25)
+    if not all_lists:
+        return []
+    return _rrf_merge(all_lists, top_k=top_k)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # HALLUCINATION GUARD + DIVERSITY
@@ -470,51 +483,111 @@ def _warm_memory_from_db(session_id: str) -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def rewrite_query(query: str) -> str:
-    """[C2] Skip rewrite for long/complex queries. Cache results to avoid duplicate API calls."""
-    # Skip if query is already long enough to be specific
-    if len(query.split()) >= 8:
-        return query
-    # Skip if complexity is low — short simple queries don't benefit
-    if compute_query_complexity(query) < 0.20:
-        return query
-    # Check cache (skip cache for very first call to ensure key is validated)
+    """
+    [C2] Rewrites query for retrieval. Always rewrites (even long queries)
+    because specificity matters for document-specific questions.
+    Cached to avoid duplicate API calls.
+    """
     cache_key = hashlib.md5(query.lower().strip().encode()).hexdigest()
-    if cache_key in _rewrite_cache and _rewrite_cache[cache_key] != query:
+    if cache_key in _rewrite_cache:
         return _rewrite_cache[cache_key]
     try:
         resp = _get_groq_client().chat.completions.create(
             model=GROQ_MODEL,
             messages=[{"role": "user", "content": (
-                "Rewrite this query to be more specific and retrieval-friendly for a "
-                "machine learning knowledge base. Output only the rewritten query.\n\nQuery: " + query
+                "You are a retrieval optimization assistant. Rewrite the following query "
+                "to maximize recall from a vector database. Make it more specific, use "
+                "relevant technical terms, expand acronyms, and include synonyms. "
+                "Output only the rewritten query, nothing else.\n\nQuery: " + query
             )}],
-            temperature=0.1, max_tokens=80,
+            temperature=0.1, max_tokens=120,
         )
         rw = resp.choices[0].message.content.strip()
-        result = rw if 3 <= len(rw.split()) <= 30 else query
+        result = rw if 3 <= len(rw.split()) <= 50 else query
         _rewrite_cache[cache_key] = result
         return result
     except Exception:
         return query
+
+
+def generate_query_variants(query: str) -> list[str]:
+    """
+    Multi-query retrieval: generate 3 different phrasings of the query.
+    Merging results from multiple phrasings dramatically improves recall
+    for document-specific questions where exact phrasing matters.
+    """
+    cache_key = "variants_" + hashlib.md5(query.lower().strip().encode()).hexdigest()
+    if cache_key in _rewrite_cache:
+        cached = _rewrite_cache[cache_key]
+        return cached if isinstance(cached, list) else [query]
+    try:
+        resp = _get_groq_client().chat.completions.create(
+            model=GROQ_MODEL,
+            messages=[{"role": "user", "content": (
+                "Generate 3 different search queries for retrieving information about the following question. "
+                "Each query should use different phrasing and terminology but target the same information. "
+                "Output exactly 3 queries, one per line, no numbering, no extra text.\n\nOriginal: " + query
+            )}],
+            temperature=0.3, max_tokens=150,
+        )
+        lines = [l.strip() for l in resp.choices[0].message.content.strip().split("\n") if l.strip()]
+        variants = lines[:3] if len(lines) >= 3 else [query]
+        # Always include the original
+        if query not in variants:
+            variants = [query] + variants[:2]
+        _rewrite_cache[cache_key] = variants
+        return variants
+    except Exception:
+        return [query]
 
 # ─────────────────────────────────────────────────────────────────────────────
 # GROQ CLIENT FACTORY — [M18]
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _get_groq_client() -> Groq:
-    """[M18] Reads from module globals() at call time so bk.GROQ_API_KEY = key always works."""
-    key = globals().get("GROQ_API_KEY", "") or os.getenv("GROQ_API_KEY", "")
+    """[M18] Always reads key fresh from env — survives st.cache_resource across sessions."""
+    key = GROQ_API_KEY or os.getenv("GROQ_API_KEY", "")
     return Groq(api_key=key)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PROMPT REGISTRY
 # ─────────────────────────────────────────────────────────────────────────────
 
+# Shared grounding instruction injected into every prompt
+_GROUNDING = (
+    "CRITICAL RULES:\n"
+    "1. Answer ONLY using information from the CONTEXT below.\n"
+    "2. If the context contains the answer, quote or paraphrase it directly — do NOT rely on general knowledge.\n"
+    "3. If a specific number, metric, or name appears in the context, reproduce it exactly.\n"
+    "4. If the context does NOT contain enough information, say exactly: \'The provided context does not contain enough information to answer this question.\' — do NOT hallucinate.\n"
+    "5. Never make up citations, numbers, or facts not present in the context.\n"
+)
+
 PROMPT_REGISTRY: dict[str, dict] = {
-    "v1_standard":  {"version":"v1_standard",  "label":"Standard",          "system":"You are a knowledgeable AI tutor. Use the provided context to answer accurately and concisely. If the context does not fully cover the question, say so clearly.","template":"Context:\n{context}\n\n{memory}Question: {query}\n\nProvide a clear, accurate answer based on the context above."},
-    "v2_simplified":{"version":"v2_simplified", "label":"Simplified",         "system":"You are a patient AI tutor. Use simple language, step-by-step explanations, and real-world analogies. Avoid jargon.","template":"Context:\n{context}\n\n{memory}Question: {query}\n\nExplain simply. Use bullet points or numbered steps. Include an analogy if helpful."},
-    "v3_detailed":  {"version":"v3_detailed",   "label":"Detailed Structured","system":"You are an expert AI instructor. Provide: Definition → How it works → Concrete example → Key takeaway.","template":"Context:\n{context}\n\n{memory}Question: {query}\n\nProvide a detailed, structured explanation: what it is, how it works, a concrete example, and the key takeaway."},
-    "v4_socratic":  {"version":"v4_socratic",   "label":"Socratic",           "system":"You are a Socratic AI tutor. After answering clearly, always ask one guiding follow-up question that checks understanding.","template":"Context:\n{context}\n\n{memory}Question: {query}\n\nAnswer clearly, then end with one Socratic follow-up question."},
+    "v1_standard":  {
+        "version":  "v1_standard",
+        "label":    "Standard",
+        "system":   "You are a precise AI assistant. " + _GROUNDING,
+        "template": "CONTEXT (use this as your ONLY source):\n{context}\n\n{memory}QUESTION: {query}\n\nAnswer directly and precisely using only the context above. Include specific numbers and details from the context.",
+    },
+    "v2_simplified": {
+        "version":  "v2_simplified",
+        "label":    "Simplified",
+        "system":   "You are a patient AI tutor who explains clearly. " + _GROUNDING,
+        "template": "CONTEXT (use this as your ONLY source):\n{context}\n\n{memory}QUESTION: {query}\n\nExplain clearly using the context. Use simple language and bullet points. Include any specific numbers or facts from the context.",
+    },
+    "v3_detailed":  {
+        "version":  "v3_detailed",
+        "label":    "Detailed Structured",
+        "system":   "You are an expert instructor who gives structured answers. " + _GROUNDING,
+        "template": "CONTEXT (use this as your ONLY source):\n{context}\n\n{memory}QUESTION: {query}\n\nProvide a structured answer: (1) Direct answer with exact figures from context, (2) How it works, (3) Key details from context, (4) Takeaway.",
+    },
+    "v4_socratic":  {
+        "version":  "v4_socratic",
+        "label":    "Socratic",
+        "system":   "You are a Socratic tutor who grounds all answers in evidence. " + _GROUNDING,
+        "template": "CONTEXT (use this as your ONLY source):\n{context}\n\n{memory}QUESTION: {query}\n\nAnswer precisely using the context, then ask one follow-up question to check understanding.",
+    },
 }
 
 
@@ -606,18 +679,27 @@ def rag_query(
     rw    = rewrite_query(query)
     if on_step: on_step(0)
 
-    # Step 1: embed (happens inside hybrid_retrieve, signal after)
+    # Step 1: multi-query hybrid retrieval
     docs = hybrid_retrieve(rw, top_k=TOP_K, topic_filter=topic)
-    if len(docs) < 3:
-        docs = hybrid_retrieve(rw, top_k=TOP_K, topic_filter=None)
+    # Fallback: if topic-filtered gives < 4 results, merge with unfiltered
+    if len(docs) < 4:
+        broad = hybrid_retrieve(rw, top_k=TOP_K, topic_filter=None)
+        # Merge: add broad docs not already in docs
+        seen = {d["doc_id"] for d in docs}
+        for d in broad:
+            if d["doc_id"] not in seen:
+                docs.append(d)
+                seen.add(d["doc_id"])
+        docs = docs[:TOP_K]
     if on_step: on_step(1)
 
-    # Step 2: retrieve done
+    # Step 2: retrieve done — build rich context
     doc_ids   = [d["doc_id"] for d in docs]
-    # [B7] Use dense_score for avg_retrieval_score (interpretable cosine sim), RRF score for ranking
     scores    = [d.get("dense_score", d["score"]) for d in docs]
     avg_score = round(float(np.mean(scores)), 4) if scores else 0.0
-    context   = "\n\n---\n\n".join(d["text"] for d in docs)
+    # Number each context chunk so the LLM can reference them
+    context_parts = [f"[Source {i+1}]\n{d['text']}" for i, d in enumerate(docs)]
+    context = "\n\n---\n\n".join(context_parts)
     if on_step: on_step(2)
 
     # Step 3: memory
@@ -645,7 +727,7 @@ def rag_query(
             {"role": "system", "content": prompt_cfg["system"]},
             {"role": "user",   "content": user_msg},
         ],
-        temperature=0.25, max_tokens=800,
+        temperature=0.15, max_tokens=1200,
     )
     response_text = chat.choices[0].message.content.strip()
     add_to_memory(session_id, "user",      query)

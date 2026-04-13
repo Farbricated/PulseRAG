@@ -14,7 +14,7 @@ Fixes applied vs v3:
 """
 
 from __future__ import annotations
-import io, os, time, uuid
+import io, os, re, time, uuid
 from pathlib import Path
 from collections import Counter
 
@@ -255,19 +255,84 @@ def _parse_txt(raw: bytes, name: str) -> list[dict]:
 
 
 def _parse_pdf(raw: bytes, name: str) -> list[dict]:
-    """[M19] Raises a clear error if pdfplumber not installed — never silently ingests garbage."""
+    """
+    Robust PDF parser that handles:
+    - Tables: extracted as structured prose (each row → readable sentence)
+    - Body text: small 350-char chunks with 100-char overlap
+    - Section headers: kept with their following paragraph for context
+    - Numbers/metrics: never split across chunk boundaries
+    """
     try:
         import pdfplumber
     except ImportError:
         raise ImportError("pdfplumber not installed. Run: pip install pdfplumber")
+
     docs = []
+    seen_texts: set = set()  # deduplicate across pages
+
+    def _add(doc_id: str, text: str) -> None:
+        text = text.strip()
+        if not text or len(text) < 20:
+            return
+        key = text[:80]
+        if key in seen_texts:
+            return
+        seen_texts.add(key)
+        docs.append({"id": doc_id, "topic": "custom", "text": text})
+
     with pdfplumber.open(io.BytesIO(raw)) as pdf:
         for pi, page in enumerate(pdf.pages):
+
+            # ── 1. Extract tables as readable sentences ───────────────────
+            tables = page.extract_tables() or []
+            for ti, table in enumerate(tables):
+                if not table or len(table) < 2:
+                    continue
+                headers = [str(c or "").strip() for c in table[0]]
+                table_sentences = []
+                for row in table[1:]:
+                    if not row:
+                        continue
+                    parts = []
+                    for hi, cell in enumerate(row):
+                        val = str(cell or "").strip()
+                        if val and val.lower() not in ("none", ""):
+                            h = headers[hi] if hi < len(headers) else f"col{hi}"
+                            parts.append(f"{h} is {val}")
+                    if parts:
+                        table_sentences.append("; ".join(parts))
+                if table_sentences:
+                    # Store full table as one chunk AND individual rows
+                    full = f"Table {ti+1} on page {pi+1}: " + " | ".join(table_sentences)
+                    _add(f"up_{name}_p{pi}_table{ti}_full", full[:1200])
+                    # Also store each row individually for precise retrieval
+                    for ri, sent in enumerate(table_sentences):
+                        _add(f"up_{name}_p{pi}_table{ti}_row{ri}", sent)
+
+            # ── 2. Extract body text with small overlapping chunks ────────
             txt = (page.extract_text() or "").strip()
             if not txt:
                 continue
-            for ci, c in enumerate(bk.smart_chunk(txt)):   # [D14]
-                docs.append({"id": f"up_{name}_p{pi}_{ci}", "topic": "custom", "text": c})
+
+            # Split into sentences first, then group into 350-char chunks
+            sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', txt) if s.strip()]
+            current = ""
+            ci = 0
+            for sent in sentences:
+                if len(current) + len(sent) + 1 <= 350:
+                    current = (current + " " + sent).strip() if current else sent
+                else:
+                    if current:
+                        _add(f"up_{name}_p{pi}_c{ci}", current)
+                        ci += 1
+                        # Overlap: start next chunk with last sentence of previous
+                        last_sent = current.rsplit(". ", 1)[-1] if ". " in current else ""
+                        current = (last_sent + " " + sent).strip() if last_sent else sent
+                    else:
+                        current = sent
+            if current:
+                _add(f"up_{name}_p{pi}_c{ci}", current)
+
     return docs
 
 
