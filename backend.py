@@ -51,7 +51,7 @@ from sentence_transformers import SentenceTransformer, CrossEncoder
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.isotonic import IsotonicRegression
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.metrics import (
     accuracy_score, f1_score, roc_auc_score,
     precision_recall_curve, classification_report,
@@ -62,6 +62,13 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 warnings.filterwarnings("ignore")
+
+try:
+    import mlflow
+    import mlflow.sklearn
+    _MLFLOW_AVAILABLE = True
+except ImportError:
+    _MLFLOW_AVAILABLE = False
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CONFIG
@@ -107,6 +114,13 @@ _opt_threshold:      float  = 0.5   # [F4] calibrated, not hardcoded
 _embed_model:        object = None
 _cross_encoder:      object = None
 _chroma_collection:  object = None
+
+# ── Online learning (SGDClassifier partial_fit) ───────────────────────────────
+_online_model:       object = None   # SGDClassifier — updated after every query
+_online_metrics:     dict   = {}     # tracked separately from batch model
+_online_buffer:      list   = []     # rolling buffer of (features, label) tuples
+_ONLINE_BUFFER_SIZE: int    = 50     # flush to partial_fit every N samples
+_online_query_count: int    = 0      # total queries seen by online model
 
 # ── Per-session state ─────────────────────────────────────────────────────────
 _session_state: dict[str, dict] = {}
@@ -1058,6 +1072,31 @@ def train_model(df: Optional[pd.DataFrame] = None) -> dict:
     _ml_metrics = metrics
     with open(MODEL_PATH, "wb") as f:
         pickle.dump({"model": best_pipe, "metrics": metrics, "fi": fi, "threshold": _opt_threshold}, f)
+
+    # MLflow experiment tracking
+    if _MLFLOW_AVAILABLE:
+        try:
+            mlflow.set_experiment("pulserag")
+            with mlflow.start_run(run_name=f"{best_name}_{datetime.now().strftime('%H%M%S')}"):
+                mlflow.log_param("best_model",     best_name)
+                mlflow.log_param("train_size",     metrics["train_size"])
+                mlflow.log_param("data_source",    metrics["data_source"])
+                mlflow.log_param("n_features",     len(metrics["features"]))
+                mlflow.log_metric("roc_auc",       metrics["roc_auc"])
+                mlflow.log_metric("f1_score",      metrics["f1_score"])
+                mlflow.log_metric("accuracy",      metrics["accuracy"])
+                mlflow.log_metric("opt_threshold", metrics["opt_threshold"])
+                for name, res in cv_results.items():
+                    safe = name.replace(" ", "_")
+                    mlflow.log_metric(f"cv_auc_{safe}", res["mean_auc"])
+                    mlflow.log_metric(f"cv_std_{safe}", res["std"])
+                if fi:
+                    for feat, imp in fi.items():
+                        mlflow.log_metric(f"fi_{feat}", round(float(imp), 6))
+                mlflow.sklearn.log_model(best_pipe, "model")
+        except Exception:
+            pass  # MLflow logging is non-critical
+
     return metrics
 
 
@@ -1087,19 +1126,165 @@ def build_feature_dict(raw: dict) -> dict:
 
 
 def predict_understanding(features: dict) -> dict:
-    global _ml_model, _opt_threshold
+    global _ml_model, _opt_threshold, _ml_metrics
     if _ml_model is None:
         if not load_model(): train_model()
     full_features = build_feature_dict(features)
-    avail = [f for f in FEATURES if f in full_features]
-    x    = pd.DataFrame([{f: full_features.get(f, 0.0) for f in avail}])
-    prob = float(_ml_model.predict_proba(x)[0][1])
+    # Use the feature list the model was actually trained on
+    trained_features = _ml_metrics.get("features", FEATURES)
+    x = pd.DataFrame([{f: full_features.get(f, 0.0) for f in trained_features}])
+    try:
+        prob = float(_ml_model.predict_proba(x)[0][1])
+    except ValueError:
+        # Stale .pkl trained on a different feature set — delete and retrain
+        if os.path.exists(MODEL_PATH):
+            os.remove(MODEL_PATH)
+        train_model()
+        trained_features = _ml_metrics.get("features", FEATURES)
+        x = pd.DataFrame([{f: full_features.get(f, 0.0) for f in trained_features}])
+        prob = float(_ml_model.predict_proba(x)[0][1])
     return {
         "understood": int(prob >= _opt_threshold),
         "probability": round(prob, 4),
         "confidence":  round(max(prob, 1 - prob), 4),
         "threshold":   _opt_threshold,
     }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ONLINE LEARNING — SGDClassifier with partial_fit
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _get_online_model() -> SGDClassifier:
+    """Lazy-init the online SGDClassifier. Always returns same instance."""
+    global _online_model
+    if _online_model is None:
+        _online_model = SGDClassifier(
+            loss="log_loss",          # probabilistic output
+            penalty="l2",
+            alpha=0.0001,
+            learning_rate="optimal",
+            class_weight="balanced",
+            warm_start=True,          # enables partial_fit semantics on fit()
+            random_state=42,
+            max_iter=1,               # one pass per partial_fit call
+        )
+    return _online_model
+
+
+def online_update(features: dict, label: int) -> dict:
+    """
+    Online learning: update SGDClassifier with a single (features, label) sample.
+    Buffers samples and calls partial_fit every _ONLINE_BUFFER_SIZE samples
+    to amortize overhead. Returns current online model metrics.
+    """
+    global _online_buffer, _online_query_count, _online_metrics
+
+    full = build_feature_dict(features)
+    feat_names = [f for f in FEATURES if f in full]
+    x_row = [full.get(f, 0.0) for f in feat_names]
+
+    _online_buffer.append((x_row, label))
+    _online_query_count += 1
+
+    model = _get_online_model()
+
+    # Always do a single-sample partial_fit immediately (true online learning)
+    try:
+        model.partial_fit(
+            [x_row], [label],
+            classes=[0, 1],
+        )
+    except Exception:
+        pass
+
+    # Every _ONLINE_BUFFER_SIZE samples, flush buffer and compute metrics
+    if len(_online_buffer) >= _ONLINE_BUFFER_SIZE:
+        X_buf = [row for row, _ in _online_buffer]
+        y_buf = [lbl for _, lbl in _online_buffer]
+        try:
+            model.partial_fit(X_buf, y_buf, classes=[0, 1])
+            probs = model.predict_proba(X_buf)[:, 1]
+            preds = (probs >= 0.5).astype(int)
+            _online_metrics = {
+                "accuracy":       round(float(accuracy_score(y_buf, preds)), 4),
+                "f1_score":       round(float(f1_score(y_buf, preds, zero_division=0)), 4),
+                "roc_auc":        round(float(roc_auc_score(y_buf, probs)), 4) if len(set(y_buf)) > 1 else 0.0,
+                "samples_seen":   _online_query_count,
+                "buffer_size":    len(_online_buffer),
+                "last_updated":   datetime.now().isoformat(),
+            }
+        except Exception:
+            pass
+        _online_buffer = []   # reset buffer after flush
+
+    return _online_metrics
+
+
+def online_predict(features: dict) -> Optional[dict]:
+    """
+    Get prediction from the online model if it has seen enough samples.
+    Returns None if the online model is not yet warmed up (< 10 samples).
+    """
+    global _online_query_count
+    if _online_query_count < 10:
+        return None
+    model = _get_online_model()
+    try:
+        full = build_feature_dict(features)
+        feat_names = [f for f in FEATURES if f in full]
+        x = [full.get(f, 0.0) for f in feat_names]
+        prob = float(model.predict_proba([x])[0][1])
+        return {
+            "online_probability": round(prob, 4),
+            "online_understood":  int(prob >= 0.5),
+            "samples_seen":       _online_query_count,
+        }
+    except Exception:
+        return None
+
+
+def get_online_metrics() -> dict:
+    """Return current online model metrics for display."""
+    return {
+        **_online_metrics,
+        "samples_seen":  _online_query_count,
+        "buffer_pending": len(_online_buffer),
+        "model_ready":    _online_query_count >= 10,
+    }
+
+
+def save_online_model() -> None:
+    """Persist online model to disk alongside batch model."""
+    if _online_model is not None:
+        try:
+            with open("pulserag_online_model.pkl", "wb") as f:
+                pickle.dump({
+                    "model":         _online_model,
+                    "metrics":       _online_metrics,
+                    "query_count":   _online_query_count,
+                    "buffer":        _online_buffer,
+                }, f)
+        except Exception:
+            pass
+
+
+def load_online_model() -> bool:
+    """Load persisted online model from disk."""
+    global _online_model, _online_metrics, _online_query_count, _online_buffer
+    path = "pulserag_online_model.pkl"
+    if not os.path.exists(path):
+        return False
+    try:
+        with open(path, "rb") as f:
+            data = pickle.load(f)
+        _online_model        = data["model"]
+        _online_metrics      = data.get("metrics", {})
+        _online_query_count  = data.get("query_count", 0)
+        _online_buffer       = data.get("buffer", [])
+        return True
+    except Exception:
+        return False
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1292,6 +1477,20 @@ def _update_feedback_metric_after(log_id: int, metric_after: float) -> None:
 
 def init_db() -> None:
     con = sqlite3.connect(DB_PATH)
+    # Auto-migrate: add missing columns to existing tables without dropping data
+    try:
+        existing = [r[1] for r in con.execute("PRAGMA table_info(judge_log)").fetchall()]
+        for col in ["context_precision", "context_recall", "faithfulness"]:
+            if col not in existing:
+                con.execute(f"ALTER TABLE judge_log ADD COLUMN {col} REAL")
+        existing_i = [r[1] for r in con.execute("PRAGMA table_info(interactions)").fetchall()]
+        for col in ["quality_weighted_length", "engagement_depth", "risk_under_load",
+                    "context_precision", "context_recall", "faithfulness", "opt_threshold"]:
+            if col not in existing_i:
+                con.execute(f"ALTER TABLE interactions ADD COLUMN {col} REAL")
+        con.commit()
+    except Exception:
+        pass
     con.executescript("""
         CREATE TABLE IF NOT EXISTS interactions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1479,6 +1678,7 @@ def get_system_stats() -> dict:
         "judge_ml_correlation":  judge_ml_corr,
         "latency":               latency_pct,
         "data_source":           _ml_metrics.get("data_source", "synthetic"),
+        "online_model":          get_online_metrics(),
         # RAGAS averages
         "avg_context_precision": round(float(df["context_precision"].mean()), 3) if not df.empty and "context_precision" in df.columns else None,
         "avg_context_recall":    round(float(df["context_recall"].mean()), 3)    if not df.empty and "context_recall"    in df.columns else None,
@@ -1596,6 +1796,13 @@ def run_pipeline(
     if total_q % 20 == 0:
         check_drift_and_retrain()
 
+    # Online learning: update SGD model with this query's label
+    online_update(features, prediction["understood"])
+    online_pred = online_predict(features)
+    # Persist online model every 10 queries
+    if total_q % 10 == 0:
+        save_online_model()
+
     global _stats_cache_ts
     _stats_cache_ts = 0.0
 
@@ -1606,12 +1813,14 @@ def run_pipeline(
         "retrieved_doc_ids":   rag["retrieved_doc_ids"],
         "retrieval_scores":    rag["retrieval_scores"],
         "avg_retrieval_score": rag["avg_retrieval_score"],
+        "response_length":     rag["response_length"],
         "hallucination_risk":  rag["hallucination_risk"],
         "response_diversity":  rag["response_diversity"],
         "latency_sec":         rag["latency_sec"],
         "prompt_version":      rag["prompt_version"],
         "ab_group":            rag["ab_group"],
         "prediction":          prediction,
+        "online_prediction":   online_pred,
         "feedback":            feedback,
         "judge_scores":        judge_scores or {},
         "ragas":               ragas,
@@ -1637,6 +1846,8 @@ def bootstrap() -> None:
         if not load_model():
             df = generate_synthetic_data(600)
             train_model(df)
+        # Also try to restore the online model from disk
+        load_online_model()
 
     with ThreadPoolExecutor(max_workers=3) as ex:
         f1 = ex.submit(_embed_and_index)

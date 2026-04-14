@@ -113,7 +113,7 @@ section.main>div{padding:0!important;max-width:100%!important}
 .pc-n{background:var(--errd);border:1px solid rgba(239,68,68,0.35);color:var(--err)}
 .pc-sub{font-size:11px;opacity:.7;font-weight:400;margin-top:2px}
 .bu{background:var(--b2);border:1px solid var(--bd);border-left:2px solid var(--acc);border-radius:0 var(--r2) var(--r2) 0;padding:12px 16px;margin:6px 0 2px;font-size:14px;line-height:1.65;animation:fu .15s ease}
-.ba{background:var(--b1);border:1px solid var(--bd);border-left:2px solid var(--ok);border-radius:0 var(--r2) var(--r2) 0;padding:12px 16px;margin:2px 0 6px;font-size:14px;line-height:1.8;white-space:pre-wrap;animation:fu .15s ease}
+.ba{background:var(--b1);border:1px solid var(--bd);border-left:2px solid var(--ok);border-radius:0 var(--r2) var(--r2) 0;padding:12px 16px;margin:2px 0 6px;font-size:14px;line-height:1.8;animation:fu .15s ease}.ba-wrap{background:var(--b1);border:1px solid var(--bd);border-left:2px solid var(--ok);border-radius:0 var(--r2) var(--r2) 0;padding:4px 16px 12px;margin:2px 0 6px;animation:fu .15s ease}.ba-wrap p{font-size:14px;line-height:1.8;color:var(--t1);margin:8px 0}.ba-wrap ul,.ba-wrap ol{padding-left:20px;margin:8px 0}.ba-wrap li{font-size:14px;line-height:1.8;color:var(--t1);margin:4px 0}.ba-wrap strong{color:var(--t1);font-weight:500}.ba-wrap h1,.ba-wrap h2,.ba-wrap h3{color:var(--t1);font-weight:500;margin:12px 0 6px}.ba-wrap code{background:var(--b2);border:1px solid var(--bd);border-radius:3px;padding:1px 5px;font-family:var(--m);font-size:12px}.ba-wrap pre{background:var(--b2);border:1px solid var(--bd);border-radius:var(--r1);padding:12px;overflow-x:auto;margin:8px 0}.ba-wrap pre code{background:none;border:none;padding:0}
 .brw{font-family:var(--m);font-size:11px;color:var(--t3);padding:0 2px 3px 6px}
 .bad{font-family:var(--m);font-size:12px;color:var(--warn);padding:2px 6px 4px}
 .bad-ok{font-family:var(--m);font-size:12px;color:var(--ok);padding:2px 6px 4px}
@@ -362,7 +362,9 @@ with T1:
                     if adapt:
                         css = "bad-ok" if "deescalate" in adapt or "Improving" in adapt else "bad"
                         st.markdown(f'<div class="{css}">↻ {adapt}</div>', unsafe_allow_html=True)
-                    st.markdown(f'<div class="ba">{msg["content"]}</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="ba-wrap">', unsafe_allow_html=True)
+                    st.markdown(msg["content"])
+                    st.markdown('</div>', unsafe_allow_html=True)
             if st.session_state.msgs and st.session_state.msgs[-1]["role"] == "assistant":
                 if st.session_state.resp_ts is None:
                     st.session_state.resp_ts = time.time()
@@ -372,11 +374,11 @@ with T1:
             st.session_state.chip_inject = None
 
         with st.form("cf", clear_on_submit=True):
-            q_in = st.text_area("", value=default_text, height=80,
+            q_in = st.text_area("Your question", value=default_text, height=80,
                 placeholder="Ask about ML, RAG, NLP, deep learning, or your uploaded documents…",
                 label_visibility="collapsed")
             st.markdown('<div class="btn-p">', unsafe_allow_html=True)
-            sent = st.form_submit_button("Send", use_container_width=True)
+            sent = st.form_submit_button("Send", width='stretch')
             st.markdown('</div>', unsafe_allow_html=True)
 
         if sent and q_in.strip():
@@ -460,26 +462,30 @@ with T1:
 
             cls = "pc-y" if pred["understood"] else "pc-n"
             lbl = "✓  Understood" if pred["understood"] else "✗  Not Understood"
-            st.markdown(f'<div class="{cls} pc">{lbl}<div class="pc-sub">p = {pred["probability"]:.3f} &nbsp;·&nbsp; threshold = {pred["threshold"]:.3f} &nbsp;·&nbsp; conf = {pred["confidence"]:.3f}</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="{cls} pc">{lbl}<div class="pc-sub">p = {pred["probability"]:.3f} &nbsp;·&nbsp; threshold = {pred.get("threshold",0.5):.3f} &nbsp;·&nbsp; conf = {pred["confidence"]:.3f}</div></div>', unsafe_allow_html=True)
 
             st.markdown('<div class="sec">Signals</div>', unsafe_allow_html=True)
-            ret  = last["avg_retrieval_score"]
-            hal  = last["hallucination_risk"]
-            div_ = last.get("response_diversity",0)
-            ttr  = last["features_used"].get("time_to_read",0)
-            fu   = last["features_used"].get("follow_up_asked",0)
-            sfu  = last["features_used"].get("similar_followup",0)
+            ret  = last.get("avg_retrieval_score", 0)
+            hal  = last.get("hallucination_risk", 0)
+            div_ = last.get("response_diversity", 0)
+            rlen = last.get("response_length", 0)
+            lat  = last.get("latency_sec", 0)
+            top  = last.get("topic_detected", "—")
+            pv   = last.get("prompt_version", "—")
+            ttr  = last.get("features_used", {}).get("time_to_read", 0)
+            fu   = last.get("features_used", {}).get("follow_up_asked", 0)
+            sfu  = last.get("features_used", {}).get("similar_followup", 0)
             for k,v,c in [
-                ("retrieval score",    f"{ret:.3f}",                 "mv-ok" if ret>0.6 else "mv-w"),
-                ("hallucination risk", f"{hal:.3f}",                 "mv-ok" if hal<0.3 else ("mv-w" if hal<0.6 else "mv-e")),
-                ("diversity",          f"{div_:.3f}",                "mv"),
-                ("time to read",       f"{ttr:.1f}s",                "mv-a"),
-                ("follow-up asked",    "yes" if fu else "no",        "mv-w" if fu else "mv"),
-                ("similar follow-up",  "yes" if sfu else "no",       "mv-w" if sfu else "mv"),
-                ("response length",    f"{last['response_length']}c","mv"),
-                ("topic",              last["topic_detected"],        "mv-a"),
-                ("prompt",             last["prompt_version"],        "mv"),
-                ("latency",            f"{last['latency_sec']}s",     "mv"),
+                ("retrieval score",    f"{ret:.3f}",          "mv-ok" if ret>0.6 else "mv-w"),
+                ("hallucination risk", f"{hal:.3f}",          "mv-ok" if hal<0.3 else ("mv-w" if hal<0.6 else "mv-e")),
+                ("diversity",          f"{div_:.3f}",         "mv"),
+                ("time to read",       f"{ttr:.1f}s",         "mv-a"),
+                ("follow-up asked",    "yes" if fu else "no", "mv-w" if fu else "mv"),
+                ("similar follow-up",  "yes" if sfu else "no","mv-w" if sfu else "mv"),
+                ("response length",    f"{rlen}c",            "mv"),
+                ("topic",              top,                    "mv-a"),
+                ("prompt",             pv,                     "mv"),
+                ("latency",            f"{lat}s",             "mv"),
             ]:
                 st.markdown(f'<div class="mr"><span class="mk">{k}</span><span class="mv {c}">{v}</span></div>', unsafe_allow_html=True)
 
@@ -557,7 +563,7 @@ with T2:
 
         if new_files:
             st.markdown('<div class="btn-ok">', unsafe_allow_html=True)
-            if st.button(f"Ingest {len(new_files)} file(s) into knowledge base", use_container_width=True):
+            if st.button(f"Ingest {len(new_files)} file(s) into knowledge base", width='stretch'):
                 for f in new_files:
                     raw = f.read(); ext = Path(f.name).suffix.lower()
                     with st.spinner(f"Embedding {f.name}…"):
@@ -586,13 +592,13 @@ with T2:
             if ingested:
                 st.markdown('<div class="badge b-ok" style="margin-bottom:6px">✓ Ingested</div>', unsafe_allow_html=True)
             else:
-                if st.button(f"Ingest {data['title']}", key=f"syn_{key}", use_container_width=True):
+                if st.button(f"Ingest {data['title']}", key=f"syn_{key}", width='stretch'):
                     with st.spinner(f"Embedding {data['title']}…"):
                         n = _ingest_synth(key)
                     st.success(f"{n} chunks added."); st.rerun()
 
     st.markdown('<div style="margin-top:12px"><div class="btn-p">', unsafe_allow_html=True)
-    if st.button("Generate and ingest all 3 document sets", use_container_width=True, key="syn_all"):
+    if st.button("Generate and ingest all 3 document sets", width='stretch', key="syn_all"):
         total = 0
         for key in SYNTH:
             if not _is_ingested(key):
@@ -670,7 +676,7 @@ with T3:
     with r3:
         st.markdown('<div class="ct">A/B group results</div>', unsafe_allow_html=True)
         ab_df = bk.get_ab_summary()
-        if not ab_df.empty: st.dataframe(ab_df, use_container_width=True, height=150)
+        if not ab_df.empty: st.dataframe(ab_df, width='stretch', height=150)
         else: st.markdown('<div class="empty">A/B results appear after first query.</div>', unsafe_allow_html=True)
 
     with r4:
@@ -679,7 +685,7 @@ with T3:
             show = df_all[["timestamp","query","topic_detected","understood","avg_retrieval_score"]].tail(8).iloc[::-1].reset_index(drop=True)
             show["query"]      = show["query"].str[:36]
             show["understood"] = show["understood"].map({1:"✓",0:"✗"})
-            st.dataframe(show, use_container_width=True, height=190)
+            st.dataframe(show, width='stretch', height=190)
         else:
             st.markdown('<div class="empty">No interactions yet.</div>', unsafe_allow_html=True)
 
@@ -707,7 +713,7 @@ with T3:
             cols = [c for c in ["timestamp","query","overall","relevance","clarity","groundedness","faithfulness"] if c in jdf.columns]
             disp = jdf[cols].tail(8).iloc[::-1].reset_index(drop=True)
             if "query" in disp.columns: disp["query"] = disp["query"].str[:30]
-            st.dataframe(disp, use_container_width=True, height=260)
+            st.dataframe(disp, width='stretch', height=260)
         else:
             st.markdown('<div class="empty">No evaluations yet.</div>', unsafe_allow_html=True)
 
@@ -804,7 +810,7 @@ with T3:
                 st.markdown(f'<div class="mr"><span class="mk" style="font-family:var(--m);font-size:11px;min-width:70px">{layer}</span><span class="mv mv-a" style="min-width:130px">{tool}</span><span class="mv">{why}</span></div>', unsafe_allow_html=True)
 
             st.markdown("<br>", unsafe_allow_html=True)
-            if st.button("Generate Evidently drift report", use_container_width=True):
+            if st.button("Generate Evidently drift report", width='stretch'):
                 with st.spinner("Running DataDrift on real data…"):
                     path = bk.generate_monitoring_report()
                 if path.startswith("error"):
@@ -814,7 +820,7 @@ with T3:
 
             # [U8] PSI drift check
             st.markdown("<br>", unsafe_allow_html=True)
-            if st.button("Check PSI drift now", use_container_width=True):
+            if st.button("Check PSI drift now", width='stretch'):
                 result = bk.check_drift_and_retrain()
                 if result["psi"] is not None:
                     psi = result["psi"]
@@ -966,7 +972,7 @@ with T5:
     TEST_Q = "Explain how gradient descent works in machine learning"
 
     st.markdown('<div class="btn-p">', unsafe_allow_html=True)
-    run = st.button("Run all 22 tests", use_container_width=True)
+    run = st.button("Run all 22 tests", width='stretch')
     st.markdown('</div>', unsafe_allow_html=True)
 
     if run:
