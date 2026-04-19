@@ -41,7 +41,6 @@ import warnings
 from collections import defaultdict, deque
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-
 from typing import Callable, Optional
 
 import numpy as np

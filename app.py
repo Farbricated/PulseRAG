@@ -902,7 +902,11 @@ with T3:
     c1.metric("Total Queries", stats["total_interactions"])
     c2.metric(
         "Understanding Rate",
-        f"{stats['understood_rate'] * 100:.1f}%" if stats["total_interactions"] else "—",
+        (
+            f"{stats['understood_rate'] * 100:.1f}%"
+            if stats["total_interactions"]
+            else "—"
+        ),
     )
     c3.metric(
         "Avg Retrieval",
