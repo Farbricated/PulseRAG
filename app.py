@@ -35,7 +35,6 @@ try:
 except ImportError:
     pass
 
-import numpy as np
 import pandas as pd
 import streamlit as st
 
@@ -61,7 +60,7 @@ st.set_page_config(
 st.markdown(
     """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');  # noqa
 :root {
   --b0:#09090b;--b1:#111114;--b2:#18181c;--b3:#1e1e24;
   --bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.13);
@@ -74,52 +73,52 @@ st.markdown(
   --r1:6px;--r2:10px;--r3:14px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body,[class*="css"]{font-family:var(--f)!important;background:var(--b0)!important;color:var(--t1)!important;font-size:14px}
+html,body,[class*="css"]{font-family:var(--f)!important;background:var(--b0)!important;color:var(--t1)!important;font-size:14px}  # noqa
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px}
 #MainMenu,footer,header,[data-testid="collapsedControl"],[data-testid="stSidebar"]{display:none!important}
 .stDeployButton{display:none!important}
 section.main>div{padding:0!important;max-width:100%!important}
 .block-container{padding:0!important;max-width:100%!important}
-.tb{display:flex;align-items:center;height:48px;padding:0 28px;background:var(--b1);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:200}
-.tb-logo{font-family:var(--m);font-size:14px;font-weight:500;color:var(--t1);margin-right:24px;white-space:nowrap;letter-spacing:-0.3px}
+.tb{display:flex;align-items:center;height:48px;padding:0 28px;background:var(--b1);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:200}  # noqa
+.tb-logo{font-family:var(--m);font-size:14px;font-weight:500;color:var(--t1);margin-right:24px;white-space:nowrap;letter-spacing:-0.3px}  # noqa
 .tb-logo span{color:var(--acc2)}
 .tb-badges{display:flex;align-items:center;gap:6px;margin-left:auto}
-.tbg{font-family:var(--m);font-size:11px;color:var(--t3);padding:2px 7px;border:1px solid var(--bd);border-radius:4px;white-space:nowrap}
+.tbg{font-family:var(--m);font-size:11px;color:var(--t3);padding:2px 7px;border:1px solid var(--bd);border-radius:4px;white-space:nowrap}  # noqa
 .tbg.live{color:var(--ok);border-color:rgba(34,197,94,0.3);background:var(--okd)}
-[data-baseweb="tab-list"]{background:var(--b1)!important;border-bottom:1px solid var(--bd)!important;gap:0!important;padding:0 20px!important}
-[data-baseweb="tab"]{font-family:var(--m)!important;font-size:12px!important;color:var(--t3)!important;background:transparent!important;padding:10px 16px!important;transition:color .12s!important;border-bottom:2px solid transparent!important;letter-spacing:.2px!important}
+[data-baseweb="tab-list"]{background:var(--b1)!important;border-bottom:1px solid var(--bd)!important;gap:0!important;padding:0 20px!important}  # noqa
+[data-baseweb="tab"]{font-family:var(--m)!important;font-size:12px!important;color:var(--t3)!important;background:transparent!important;padding:10px 16px!important;transition:color .12s!important;border-bottom:2px solid transparent!important;letter-spacing:.2px!important}  # noqa
 [data-baseweb="tab"]:hover{color:var(--t2)!important}
-[aria-selected="true"]{color:var(--t1)!important;border-bottom-color:var(--acc)!important;background:rgba(99,102,241,0.06)!important}
+[aria-selected="true"]{color:var(--t1)!important;border-bottom-color:var(--acc)!important;background:rgba(99,102,241,0.06)!important}  # noqa
 .pg{padding:24px 28px;max-width:1400px;margin:0 auto}
-[data-baseweb="textarea"] textarea,[data-baseweb="input"] input{background:var(--b2)!important;border:1px solid var(--bd)!important;border-radius:var(--r1)!important;color:var(--t1)!important;font-family:var(--f)!important;font-size:14px!important}
-[data-baseweb="textarea"] textarea:focus,[data-baseweb="input"] input:focus{border-color:var(--acc)!important;box-shadow:0 0 0 3px rgba(99,102,241,0.15)!important}
-[data-baseweb="select"]>div{background:var(--b2)!important;border:1px solid var(--bd)!important;border-radius:var(--r1)!important;color:var(--t1)!important}
-.stButton>button{background:var(--b2)!important;color:var(--t2)!important;border:1px solid var(--bd)!important;border-radius:var(--r1)!important;font-family:var(--m)!important;font-size:12px!important;padding:8px 16px!important;transition:all .12s!important;width:100%!important;letter-spacing:.2px!important}
+[data-baseweb="textarea"] textarea,[data-baseweb="input"] input{background:var(--b2)!important;border:1px solid var(--bd)!important;border-radius:var(--r1)!important;color:var(--t1)!important;font-family:var(--f)!important;font-size:14px!important}  # noqa
+[data-baseweb="textarea"] textarea:focus,[data-baseweb="input"] input:focus{border-color:var(--acc)!important;box-shadow:0 0 0 3px rgba(99,102,241,0.15)!important}  # noqa
+[data-baseweb="select"]>div{background:var(--b2)!important;border:1px solid var(--bd)!important;border-radius:var(--r1)!important;color:var(--t1)!important}  # noqa
+.stButton>button{background:var(--b2)!important;color:var(--t2)!important;border:1px solid var(--bd)!important;border-radius:var(--r1)!important;font-family:var(--m)!important;font-size:12px!important;padding:8px 16px!important;transition:all .12s!important;width:100%!important;letter-spacing:.2px!important}  # noqa
 .stButton>button:hover{border-color:var(--acc)!important;color:var(--acc2)!important;background:var(--accd)!important}
-.btn-p .stButton>button{background:var(--acc)!important;color:#fff!important;border-color:transparent!important;font-weight:500!important}
+.btn-p .stButton>button{background:var(--acc)!important;color:#fff!important;border-color:transparent!important;font-weight:500!important}  # noqa
 .btn-p .stButton>button:hover{background:var(--acc2)!important;transform:translateY(-1px)!important}
-.btn-ok .stButton>button{background:var(--okd)!important;color:var(--ok)!important;border-color:rgba(34,197,94,0.4)!important}
-.btn-chip .stButton>button{background:var(--b2)!important;border:1px solid var(--bd)!important;border-radius:20px!important;padding:6px 14px!important;font-size:12px!important;color:var(--t2)!important;width:auto!important}
-.btn-chip .stButton>button:hover{border-color:var(--acc)!important;color:var(--acc2)!important;background:var(--accd)!important}
-[data-testid="metric-container"]{background:var(--b2)!important;border:none!important;border-radius:var(--r2)!important;padding:14px 16px!important}
-[data-testid="stMetricLabel"]{font-family:var(--m)!important;font-size:11px!important;color:var(--t3)!important;text-transform:uppercase!important;letter-spacing:.5px!important}
-[data-testid="stMetricValue"]{font-family:var(--m)!important;font-size:20px!important;color:var(--t1)!important;font-weight:500!important}
-[data-testid="stDataFrame"]{border:1px solid var(--bd)!important;border-radius:var(--r2)!important;overflow:hidden!important}
-[data-testid="stExpander"]{background:var(--b1)!important;border:1px solid var(--bd)!important;border-radius:var(--r2)!important}
+.btn-ok .stButton>button{background:var(--okd)!important;color:var(--ok)!important;border-color:rgba(34,197,94,0.4)!important}  # noqa
+.btn-chip .stButton>button{background:var(--b2)!important;border:1px solid var(--bd)!important;border-radius:20px!important;padding:6px 14px!important;font-size:12px!important;color:var(--t2)!important;width:auto!important}  # noqa
+.btn-chip .stButton>button:hover{border-color:var(--acc)!important;color:var(--acc2)!important;background:var(--accd)!important}  # noqa
+[data-testid="metric-container"]{background:var(--b2)!important;border:none!important;border-radius:var(--r2)!important;padding:14px 16px!important}  # noqa
+[data-testid="stMetricLabel"]{font-family:var(--m)!important;font-size:11px!important;color:var(--t3)!important;text-transform:uppercase!important;letter-spacing:.5px!important}  # noqa
+[data-testid="stMetricValue"]{font-family:var(--m)!important;font-size:20px!important;color:var(--t1)!important;font-weight:500!important}  # noqa
+[data-testid="stDataFrame"]{border:1px solid var(--bd)!important;border-radius:var(--r2)!important;overflow:hidden!important}  # noqa
+[data-testid="stExpander"]{background:var(--b1)!important;border:1px solid var(--bd)!important;border-radius:var(--r2)!important}  # noqa
 .card{background:var(--b1);border:1px solid var(--bd);border-radius:var(--r3);padding:18px 20px;margin-bottom:14px}
 .ci{background:var(--b2);border:1px solid var(--bd);border-radius:var(--r2);padding:14px 16px;margin-bottom:10px}
-.ct{font-family:var(--m);font-size:11px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px}
-.mr{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--bd);font-size:13px}
+.ct{font-family:var(--m);font-size:11px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px}  # noqa
+.mr{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--bd);font-size:13px}  # noqa
 .mr:last-child{border-bottom:none}
 .mk{color:var(--t2)}
 .mv{font-family:var(--m);font-size:12px;color:var(--t1);text-align:right}
-.mv-ok{color:var(--ok)!important}.mv-w{color:var(--warn)!important}.mv-e{color:var(--err)!important}.mv-a{color:var(--acc2)!important}
+.mv-ok{color:var(--ok)!important}.mv-w{color:var(--warn)!important}.mv-e{color:var(--err)!important}.mv-a{color:var(--acc2)!important}  # noqa
 .pb-w{margin:5px 0}
 .pb-h{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);margin-bottom:4px}
 .pb-t{background:var(--bd2);border-radius:2px;height:3px}
 .pb-f{height:3px;border-radius:2px;transition:width .5s ease}
-.badge{display:inline-flex;align-items:center;gap:4px;font-family:var(--m);font-size:11px;font-weight:500;padding:3px 8px;border-radius:20px;white-space:nowrap}
+.badge{display:inline-flex;align-items:center;gap:4px;font-family:var(--m);font-size:11px;font-weight:500;padding:3px 8px;border-radius:20px;white-space:nowrap}  # noqa
 .b-ok{background:var(--okd);border:1px solid rgba(34,197,94,0.4);color:var(--ok)}
 .b-w{background:var(--warnd);border:1px solid rgba(245,158,11,0.4);color:var(--warn)}
 .b-e{background:var(--errd);border:1px solid rgba(239,68,68,0.4);color:var(--err)}
@@ -129,36 +128,36 @@ section.main>div{padding:0!important;max-width:100%!important}
 .pc-y{background:var(--okd);border:1px solid rgba(34,197,94,0.35);color:var(--ok)}
 .pc-n{background:var(--errd);border:1px solid rgba(239,68,68,0.35);color:var(--err)}
 .pc-sub{font-size:11px;opacity:.7;font-weight:400;margin-top:2px}
-.bu{background:var(--b2);border:1px solid var(--bd);border-left:2px solid var(--acc);border-radius:0 var(--r2) var(--r2) 0;padding:12px 16px;margin:6px 0 2px;font-size:14px;line-height:1.65;animation:fu .15s ease}
-.ba{background:var(--b1);border:1px solid var(--bd);border-left:2px solid var(--ok);border-radius:0 var(--r2) var(--r2) 0;padding:12px 16px;margin:2px 0 6px;font-size:14px;line-height:1.8;animation:fu .15s ease}.ba-wrap{background:var(--b1);border:1px solid var(--bd);border-left:2px solid var(--ok);border-radius:0 var(--r2) var(--r2) 0;padding:4px 16px 12px;margin:2px 0 6px;animation:fu .15s ease}.ba-wrap p{font-size:14px;line-height:1.8;color:var(--t1);margin:8px 0}.ba-wrap ul,.ba-wrap ol{padding-left:20px;margin:8px 0}.ba-wrap li{font-size:14px;line-height:1.8;color:var(--t1);margin:4px 0}.ba-wrap strong{color:var(--t1);font-weight:500}.ba-wrap h1,.ba-wrap h2,.ba-wrap h3{color:var(--t1);font-weight:500;margin:12px 0 6px}.ba-wrap code{background:var(--b2);border:1px solid var(--bd);border-radius:3px;padding:1px 5px;font-family:var(--m);font-size:12px}.ba-wrap pre{background:var(--b2);border:1px solid var(--bd);border-radius:var(--r1);padding:12px;overflow-x:auto;margin:8px 0}.ba-wrap pre code{background:none;border:none;padding:0}
+.bu{background:var(--b2);border:1px solid var(--bd);border-left:2px solid var(--acc);border-radius:0 var(--r2) var(--r2) 0;padding:12px 16px;margin:6px 0 2px;font-size:14px;line-height:1.65;animation:fu .15s ease}  # noqa
+.ba{background:var(--b1);border:1px solid var(--bd);border-left:2px solid var(--ok);border-radius:0 var(--r2) var(--r2) 0;padding:12px 16px;margin:2px 0 6px;font-size:14px;line-height:1.8;animation:fu .15s ease}.ba-wrap{background:var(--b1);border:1px solid var(--bd);border-left:2px solid var(--ok);border-radius:0 var(--r2) var(--r2) 0;padding:4px 16px 12px;margin:2px 0 6px;animation:fu .15s ease}.ba-wrap p{font-size:14px;line-height:1.8;color:var(--t1);margin:8px 0}.ba-wrap ul,.ba-wrap ol{padding-left:20px;margin:8px 0}.ba-wrap li{font-size:14px;line-height:1.8;color:var(--t1);margin:4px 0}.ba-wrap strong{color:var(--t1);font-weight:500}.ba-wrap h1,.ba-wrap h2,.ba-wrap h3{color:var(--t1);font-weight:500;margin:12px 0 6px}.ba-wrap code{background:var(--b2);border:1px solid var(--bd);border-radius:3px;padding:1px 5px;font-family:var(--m);font-size:12px}.ba-wrap pre{background:var(--b2);border:1px solid var(--bd);border-radius:var(--r1);padding:12px;overflow-x:auto;margin:8px 0}.ba-wrap pre code{background:none;border:none;padding:0}  # noqa
 .brw{font-family:var(--m);font-size:11px;color:var(--t3);padding:0 2px 3px 6px}
 .bad{font-family:var(--m);font-size:12px;color:var(--warn);padding:2px 6px 4px}
 .bad-ok{font-family:var(--m);font-size:12px;color:var(--ok);padding:2px 6px 4px}
 @keyframes fu{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-.ps{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:5px;font-family:var(--m);font-size:11px;margin:1px 0}
-.pn{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;flex-shrink:0}
+.ps{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:5px;font-family:var(--m);font-size:11px;margin:1px 0}  # noqa
+.pn{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;flex-shrink:0}  # noqa
 .ps-idle .pn{background:var(--b3);color:var(--t3)}.ps-idle .pl{color:var(--t3)}
-.ps-run  .pn{background:var(--warnd);color:var(--warn);border:1px solid rgba(245,158,11,0.4)}.ps-run  .pl{color:var(--warn)}
+.ps-run  .pn{background:var(--warnd);color:var(--warn);border:1px solid rgba(245,158,11,0.4)}.ps-run  .pl{color:var(--warn)}  # noqa
 .ps-done .pn{background:var(--okd);color:var(--ok);border:1px solid rgba(34,197,94,0.4)}.ps-done .pl{color:var(--ok)}
-.tr{display:flex;align-items:flex-start;gap:10px;padding:7px 12px;border-bottom:1px solid var(--bd);font-size:13px;min-height:36px}
+.tr{display:flex;align-items:flex-start;gap:10px;padding:7px 12px;border-bottom:1px solid var(--bd);font-size:13px;min-height:36px}  # noqa
 .tr:last-child{border-bottom:none}
 .ti{font-family:var(--m);font-size:12px;min-width:14px;margin-top:1px;flex-shrink:0}
 .tl{color:var(--t1);min-width:250px;flex-shrink:0}
 .td{color:var(--t3);font-size:12px;flex:1;font-family:var(--m)}
 .tt{font-family:var(--m);font-size:11px;color:var(--t3);min-width:38px;text-align:right;flex-shrink:0}
-.tsc{background:var(--b1);border:1px solid var(--bd2);border-radius:var(--r3);padding:20px 24px;display:flex;align-items:center;gap:24px;margin-top:16px}
+.tsc{background:var(--b1);border:1px solid var(--bd2);border-radius:var(--r3);padding:20px 24px;display:flex;align-items:center;gap:24px;margin-top:16px}  # noqa
 .tsp{text-align:center;min-width:70px}
 .tsn{font-family:var(--m);font-size:28px;font-weight:500;line-height:1}
 .tsl{font-family:var(--m);font-size:10px;color:var(--t3);margin-top:3px;letter-spacing:1px}
-.cm-cell{display:flex;align-items:center;justify-content:center;border-radius:var(--r1);font-family:var(--m);font-size:13px;font-weight:500;height:52px}
+.cm-cell{display:flex;align-items:center;justify-content:center;border-radius:var(--r1);font-family:var(--m);font-size:13px;font-weight:500;height:52px}  # noqa
 .divider{height:1px;background:var(--bd);margin:18px 0}
-.sec{font-family:var(--m);font-size:10px;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;margin:14px 0 8px}
+.sec{font-family:var(--m);font-size:10px;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;margin:14px 0 8px}  # noqa
 .empty{color:var(--t3);font-size:12px;font-family:var(--m);text-align:center;padding:24px 0;line-height:1.8}
 .wc{text-align:center;padding:52px 20px 32px}
 .wt{font-family:var(--m);font-size:18px;color:var(--t1);margin-bottom:6px}
 .ws{font-size:13px;color:var(--t3);max-width:320px;margin:0 auto 20px;line-height:1.7}
-.arch{background:var(--b2);border:1px solid var(--bd);border-radius:var(--r2);padding:16px 18px;font-family:var(--m);font-size:12px;line-height:2.1;color:var(--t2)}
-.ac{color:#818cf8;font-weight:500}.ag{color:#22c55e;font-weight:500}.aa{color:#f59e0b;font-weight:500}.av{color:#a78bfa;font-weight:500}
+.arch{background:var(--b2);border:1px solid var(--bd);border-radius:var(--r2);padding:16px 18px;font-family:var(--m);font-size:12px;line-height:2.1;color:var(--t2)}  # noqa
+.ac{color:#818cf8;font-weight:500}.ag{color:#22c55e;font-weight:500}.aa{color:#f59e0b;font-weight:500}.av{color:#a78bfa;font-weight:500}  # noqa
 hr{border:none;border-top:1px solid var(--bd)!important;margin:20px 0!important}
 </style>
 """,
@@ -172,16 +171,16 @@ if not GROQ_API_KEY:
     st.markdown(
         """
     <div style="display:flex;align-items:center;justify-content:center;min-height:80vh">
-      <div style="background:var(--b1);border:1px solid var(--bd2);border-radius:var(--r3);padding:40px 48px;max-width:520px;text-align:center">
-        <div style="font-family:var(--m);font-size:18px;color:var(--t1);margin-bottom:6px">Pulse<span style="color:#818cf8">RAG</span></div>
+      <div style="background:var(--b1);border:1px solid var(--bd2);border-radius:var(--r3);padding:40px 48px;max-width:520px;text-align:center">  # noqa
+        <div style="font-family:var(--m);font-size:18px;color:var(--t1);margin-bottom:6px">Pulse<span style="color:#818cf8">RAG</span></div>  # noqa
         <div style="font-size:13px;color:var(--t3);margin-bottom:28px;line-height:1.7">
           Set your Groq API key using one of the methods below, then restart.
         </div>
-        <div style="background:var(--b2);border:1px solid var(--bd);border-radius:var(--r2);padding:16px 20px;text-align:left;font-family:var(--m);font-size:12px;line-height:2.2">
+        <div style="background:var(--b2);border:1px solid var(--bd);border-radius:var(--r2);padding:16px 20px;text-align:left;font-family:var(--m);font-size:12px;line-height:2.2">  # noqa
           <span style="color:var(--t3)"># Streamlit Cloud → App Settings → Secrets</span><br>
-          <span style="color:var(--acc2)">GROQ_API_KEY</span> = <span style="color:var(--ok)">"gsk_your_key_here"</span><br><br>
+          <span style="color:var(--acc2)">GROQ_API_KEY</span> = <span style="color:var(--ok)">"gsk_your_key_here"</span><br><br>  # noqa
           <span style="color:var(--t3)"># Local → .env file</span><br>
-          <span style="color:var(--acc2)">GROQ_API_KEY</span>=<span style="color:var(--ok)">gsk_your_key_here</span><br><br>
+          <span style="color:var(--acc2)">GROQ_API_KEY</span>=<span style="color:var(--ok)">gsk_your_key_here</span><br><br>  # noqa
           <span style="color:var(--t3)"># Then run</span><br>
           <span style="color:var(--t1)">streamlit run app.py</span>
         </div>
@@ -369,18 +368,18 @@ SYNTH = {
     "ml": {
         "title": "ML Concepts",
         "topic": "machine_learning",
-        "desc": "SVM, PCA, KNN, regularization, gradient boosting, SHAP, cross-entropy, feature scaling, precision-recall curves.",
+        "desc": "SVM, PCA, KNN, regularization, gradient boosting, SHAP, cross-entropy, feature scaling, precision-recall curves.",  # noqa
         "chunks": [
-            "Support Vector Machines find the optimal hyperplane that maximizes the margin between classes. Support vectors are the data points closest to the decision boundary. SVMs work well in high-dimensional spaces. The kernel trick maps inputs into higher-dimensional spaces using RBF, polynomial, and sigmoid kernels.",
-            "Principal Component Analysis transforms data into axes of maximum variance. Used for visualization, noise reduction, and speeding up downstream ML algorithms. Components are chosen based on explained variance ratio, typically retaining 95% of total variance.",
-            "K-Nearest Neighbors classifies based on the majority class of k nearest neighbors. Distance metrics: Euclidean, Manhattan, Minkowski. No training phase but slow at inference for large datasets. Small k = high variance, large k = high bias.",
-            "Gradient boosting builds an additive model by fitting successive trees to residuals. XGBoost adds L1/L2 regularization and column subsampling. LightGBM uses histogram-based splits for speed. CatBoost handles categorical features natively.",
-            "Regularization prevents overfitting. L1 (Lasso) drives some weights to zero — good for feature selection. L2 (Ridge) shrinks all weights toward zero. Elastic net combines L1 and L2 with a mixing parameter alpha.",
-            "SHAP values provide consistent feature attributions averaging over all possible coalitions. TreeSHAP computes exact values for tree models in polynomial time. Makes black-box models interpretable for individual predictions.",
-            "Cross-entropy loss penalizes confident wrong predictions. Binary: L = -[y*log(p) + (1-y)*log(1-p)]. Multi-class: L = -sum(y_i * log(p_i)). Neural networks use cross-entropy with softmax output.",
-            "Feature scaling: min-max normalization maps to [0,1], standardization to zero mean and unit variance, robust scaling uses median and IQR. Tree-based models are invariant to monotonic transformations and do not require scaling.",
-            "Precision-Recall curves are more informative than ROC for imbalanced datasets. AUCPR summarizes performance across thresholds. A random classifier AUCPR equals the prevalence of the positive class.",
-            "Cross-validation provides reliable generalization estimates. Stratified k-fold preserves class proportions — essential for imbalanced datasets. Nested CV uses outer loop for estimation and inner loop for hyperparameter tuning.",
+            "Support Vector Machines find the optimal hyperplane that maximizes the margin between classes. Support vectors are the data points closest to the decision boundary. SVMs work well in high-dimensional spaces. The kernel trick maps inputs into higher-dimensional spaces using RBF, polynomial, and sigmoid kernels.",  # noqa
+            "Principal Component Analysis transforms data into axes of maximum variance. Used for visualization, noise reduction, and speeding up downstream ML algorithms. Components are chosen based on explained variance ratio, typically retaining 95% of total variance.",  # noqa
+            "K-Nearest Neighbors classifies based on the majority class of k nearest neighbors. Distance metrics: Euclidean, Manhattan, Minkowski. No training phase but slow at inference for large datasets. Small k = high variance, large k = high bias.",  # noqa
+            "Gradient boosting builds an additive model by fitting successive trees to residuals. XGBoost adds L1/L2 regularization and column subsampling. LightGBM uses histogram-based splits for speed. CatBoost handles categorical features natively.",  # noqa
+            "Regularization prevents overfitting. L1 (Lasso) drives some weights to zero — good for feature selection. L2 (Ridge) shrinks all weights toward zero. Elastic net combines L1 and L2 with a mixing parameter alpha.",  # noqa
+            "SHAP values provide consistent feature attributions averaging over all possible coalitions. TreeSHAP computes exact values for tree models in polynomial time. Makes black-box models interpretable for individual predictions.",  # noqa
+            "Cross-entropy loss penalizes confident wrong predictions. Binary: L = -[y*log(p) + (1-y)*log(1-p)]. Multi-class: L = -sum(y_i * log(p_i)). Neural networks use cross-entropy with softmax output.",  # noqa
+            "Feature scaling: min-max normalization maps to [0,1], standardization to zero mean and unit variance, robust scaling uses median and IQR. Tree-based models are invariant to monotonic transformations and do not require scaling.",  # noqa
+            "Precision-Recall curves are more informative than ROC for imbalanced datasets. AUCPR summarizes performance across thresholds. A random classifier AUCPR equals the prevalence of the positive class.",  # noqa
+            "Cross-validation provides reliable generalization estimates. Stratified k-fold preserves class proportions — essential for imbalanced datasets. Nested CV uses outer loop for estimation and inner loop for hyperparameter tuning.",  # noqa
         ],
     },
     "dl": {
@@ -388,33 +387,33 @@ SYNTH = {
         "topic": "deep_learning",
         "desc": "BatchNorm, Dropout, ResNet, Transformers, BERT, GPT, Adam optimizer, GANs, VAEs, transfer learning.",
         "chunks": [
-            "Batch normalization normalizes layer inputs by subtracting batch mean and dividing by batch standard deviation, then applying learnable scale and shift. It stabilizes training and allows higher learning rates. Layer normalization normalizes across feature dimension, suitable for transformers.",
-            "Dropout randomly sets activations to zero during training with probability p. At inference all neurons are active and outputs are scaled by (1-p). Monte Carlo dropout enables uncertainty estimation at inference by keeping dropout active.",
-            "ResNet introduced skip connections: y = F(x) + x. This allows gradients to flow directly during backpropagation, enabling training of very deep networks (50, 101, 152 layers). The residual block learns the residual mapping, making optimization easier.",
-            "Scaled dot-product attention: softmax(QK^T / sqrt(d_k)) * V. Scaling prevents dot products growing too large in high dimensions. Multi-head attention projects Q, K, V into multiple subspaces and computes attention in each, enabling the model to focus on different aspects simultaneously.",
-            "BERT pretrains on masked language modeling (MLM) and next sentence prediction. MLM masks 15% of tokens using both left and right context. BERT-base: 12 layers, 768 hidden dims, 12 attention heads, 110M parameters. Fine-tuning adds a task-specific head.",
-            "GPT uses a decoder-only transformer with causal self-attention where each token attends only to previous tokens. Pretraining uses next-token prediction. GPT-3 (175B parameters) demonstrated in-context learning from prompt examples without weight updates.",
-            "Adam maintains per-parameter learning rates using first and second moment estimates with bias correction. Parameters: alpha (learning rate), beta1=0.9, beta2=0.999, epsilon=1e-8. AdamW decouples weight decay from the gradient update.",
-            "GANs have a generator G mapping noise to fake data and a discriminator D distinguishing real from fake. Training alternates between maximizing D accuracy and minimizing it from G perspective. Wasserstein GANs use Earth Mover distance for stable training.",
-            "VAEs encode inputs as distributions (mean and variance) rather than point estimates. The reparameterization trick enables backpropagation through sampling. ELBO loss combines reconstruction loss with KL divergence from prior N(0,I).",
-            "Fine-tuning strategies: freeze all except classification head (feature extraction), unfreeze top layers only (partial), unfreeze all (full fine-tuning). Use lower learning rate for pretrained layers (1e-5) vs. new head (1e-3). Gradual unfreezing avoids catastrophic forgetting.",
+            "Batch normalization normalizes layer inputs by subtracting batch mean and dividing by batch standard deviation, then applying learnable scale and shift. It stabilizes training and allows higher learning rates. Layer normalization normalizes across feature dimension, suitable for transformers.",  # noqa
+            "Dropout randomly sets activations to zero during training with probability p. At inference all neurons are active and outputs are scaled by (1-p). Monte Carlo dropout enables uncertainty estimation at inference by keeping dropout active.",  # noqa
+            "ResNet introduced skip connections: y = F(x) + x. This allows gradients to flow directly during backpropagation, enabling training of very deep networks (50, 101, 152 layers). The residual block learns the residual mapping, making optimization easier.",  # noqa
+            "Scaled dot-product attention: softmax(QK^T / sqrt(d_k)) * V. Scaling prevents dot products growing too large in high dimensions. Multi-head attention projects Q, K, V into multiple subspaces and computes attention in each, enabling the model to focus on different aspects simultaneously.",  # noqa
+            "BERT pretrains on masked language modeling (MLM) and next sentence prediction. MLM masks 15% of tokens using both left and right context. BERT-base: 12 layers, 768 hidden dims, 12 attention heads, 110M parameters. Fine-tuning adds a task-specific head.",  # noqa
+            "GPT uses a decoder-only transformer with causal self-attention where each token attends only to previous tokens. Pretraining uses next-token prediction. GPT-3 (175B parameters) demonstrated in-context learning from prompt examples without weight updates.",  # noqa
+            "Adam maintains per-parameter learning rates using first and second moment estimates with bias correction. Parameters: alpha (learning rate), beta1=0.9, beta2=0.999, epsilon=1e-8. AdamW decouples weight decay from the gradient update.",  # noqa
+            "GANs have a generator G mapping noise to fake data and a discriminator D distinguishing real from fake. Training alternates between maximizing D accuracy and minimizing it from G perspective. Wasserstein GANs use Earth Mover distance for stable training.",  # noqa
+            "VAEs encode inputs as distributions (mean and variance) rather than point estimates. The reparameterization trick enables backpropagation through sampling. ELBO loss combines reconstruction loss with KL divergence from prior N(0,I).",  # noqa
+            "Fine-tuning strategies: freeze all except classification head (feature extraction), unfreeze top layers only (partial), unfreeze all (full fine-tuning). Use lower learning rate for pretrained layers (1e-5) vs. new head (1e-3). Gradual unfreezing avoids catastrophic forgetting.",  # noqa
         ],
     },
     "rag": {
         "title": "RAG Systems Guide",
         "topic": "rag",
-        "desc": "DPR, FAISS, re-ranking, Self-RAG, CRAG, GraphRAG, HyDE, multi-vector retrieval, RAGAS evaluation, streaming RAG.",
+        "desc": "DPR, FAISS, re-ranking, Self-RAG, CRAG, GraphRAG, HyDE, multi-vector retrieval, RAGAS evaluation, streaming RAG.",  # noqa
         "chunks": [
-            "Dense Passage Retrieval trains dual-encoder models to embed questions and passages into shared dense vector space where relevant pairs have high dot product similarity. Trained contrastively using in-batch negatives. DPR outperforms BM25 for open-domain QA.",
-            "FAISS supports IndexFlatL2 for exact brute-force search, IndexIVFFlat for approximate search partitioning into Voronoi cells, IndexHNSWFlat for sub-linear search with high recall, and IndexPQ for compressed vectors reducing memory by 8-32x.",
-            "Re-ranking with cross-encoders jointly encodes query and each candidate document and scores relevance. More accurate than bi-encoders because they model query-document interactions directly. Used as a second stage after initial retrieval narrows candidates.",
-            "Self-RAG trains an LLM to actively decide when to retrieve using special reflection tokens: Retrieve or No Retrieve, Relevant or Irrelevant, Fully Supported or Partially Supported. Adaptive retrieval reduces unnecessary API calls and improves factual accuracy.",
-            "Corrective RAG evaluates retrieved documents and triggers web search when retrieval quality is low. A lightweight evaluator scores each document as Correct, Incorrect, or Ambiguous. Incorrect documents trigger reformulated web searches.",
-            "Graph RAG structures knowledge as a graph where nodes are entities and edges are relationships. Community detection identifies thematically related entity clusters. Queries answered using local entity retrieval and global community summaries. Strong for questions requiring synthesis.",
-            "HyDE generates a hypothetical answer using an LLM, then embeds the hypothetical answer for retrieval instead of the original query. The hypothetical answer is typically more similar to relevant documents in embedding space, improving zero-shot retrieval recall.",
-            "Multi-vector retrieval stores multiple embeddings per document: summary for coarse retrieval, chunk for precise matching, parent document IDs for context expansion. Returns the full parent document as context while using child chunks for retrieval.",
-            "RAGAS metrics: context_precision (fraction of retrieved context that is relevant), context_recall (fraction of ground truth covered), faithfulness (claims supported by context), answer_relevancy (how well answer addresses the question). Enables automated evaluation without human annotation.",
-            "Streaming RAG passes retrieved context to the LLM and streams the response token by token using server-sent events. Reduces perceived latency significantly. Lost-in-the-middle research shows LLMs attend better to information at the start and end of context.",
+            "Dense Passage Retrieval trains dual-encoder models to embed questions and passages into shared dense vector space where relevant pairs have high dot product similarity. Trained contrastively using in-batch negatives. DPR outperforms BM25 for open-domain QA.",  # noqa
+            "FAISS supports IndexFlatL2 for exact brute-force search, IndexIVFFlat for approximate search partitioning into Voronoi cells, IndexHNSWFlat for sub-linear search with high recall, and IndexPQ for compressed vectors reducing memory by 8-32x.",  # noqa
+            "Re-ranking with cross-encoders jointly encodes query and each candidate document and scores relevance. More accurate than bi-encoders because they model query-document interactions directly. Used as a second stage after initial retrieval narrows candidates.",  # noqa
+            "Self-RAG trains an LLM to actively decide when to retrieve using special reflection tokens: Retrieve or No Retrieve, Relevant or Irrelevant, Fully Supported or Partially Supported. Adaptive retrieval reduces unnecessary API calls and improves factual accuracy.",  # noqa
+            "Corrective RAG evaluates retrieved documents and triggers web search when retrieval quality is low. A lightweight evaluator scores each document as Correct, Incorrect, or Ambiguous. Incorrect documents trigger reformulated web searches.",  # noqa
+            "Graph RAG structures knowledge as a graph where nodes are entities and edges are relationships. Community detection identifies thematically related entity clusters. Queries answered using local entity retrieval and global community summaries. Strong for questions requiring synthesis.",  # noqa
+            "HyDE generates a hypothetical answer using an LLM, then embeds the hypothetical answer for retrieval instead of the original query. The hypothetical answer is typically more similar to relevant documents in embedding space, improving zero-shot retrieval recall.",  # noqa
+            "Multi-vector retrieval stores multiple embeddings per document: summary for coarse retrieval, chunk for precise matching, parent document IDs for context expansion. Returns the full parent document as context while using child chunks for retrieval.",  # noqa
+            "RAGAS metrics: context_precision (fraction of retrieved context that is relevant), context_recall (fraction of ground truth covered), faithfulness (claims supported by context), answer_relevancy (how well answer addresses the question). Enables automated evaluation without human annotation.",  # noqa
+            "Streaming RAG passes retrieved context to the LLM and streams the response token by token using server-sent events. Reduces perceived latency significantly. Lost-in-the-middle research shows LLMs attend better to information at the start and end of context.",  # noqa
         ],
     },
 }
@@ -483,7 +482,7 @@ with T1:
 
         if not st.session_state.msgs:
             st.markdown(
-                """<div class="wc"><div class="wt">Pulse<span style="color:#818cf8">RAG</span></div><div class="ws">Adaptive AI tutor. Ask about ML, RAG, NLP, or deep learning. Upload your own docs in Knowledge Base.</div></div>""",
+                """<div class="wc"><div class="wt">Pulse<span style="color:#818cf8">RAG</span></div><div class="ws">Adaptive AI tutor. Ask about ML, RAG, NLP, or deep learning. Upload your own docs in Knowledge Base.</div></div>""",  # noqa
                 unsafe_allow_html=True,
             )
             chip_cols = st.columns(len(chip_questions))
@@ -578,7 +577,7 @@ with T1:
                 html = '<div class="ci"><div class="ct">Pipeline</div>'
                 for i, (name, desc) in enumerate(PIPE_STEPS):
                     s = states[i] if i < len(states) else "idle"
-                    html += f'<div class="ps ps-{s}"><span class="pn">{i+1}</span><span class="pl"><b>{name}</b> — {desc}</span></div>'
+                    html += f'<div class="ps ps-{s}"><span class="pn">{i + 1}</span><span class="pl"><b>{name}</b> — {desc}</span></div>'  # noqa
                 html += "</div>"
                 pipe_placeholder.markdown(html, unsafe_allow_html=True)
 
@@ -642,13 +641,13 @@ with T1:
             for i, (name, desc) in enumerate(PIPE_STEPS):
                 s = st.session_state.pipe[i]
                 st.markdown(
-                    f'<div class="ps ps-{s}"><span class="pn">{i+1}</span><span class="pl"><b>{name}</b> — {desc}</span></div>',
+                    f'<div class="ps ps-{s}"><span class="pn">{i + 1}</span><span class="pl"><b>{name}</b> — {desc}</span></div>',  # noqa
                     unsafe_allow_html=True,
                 )
             st.markdown("</div>", unsafe_allow_html=True)
             if not st.session_state.results:
                 st.markdown(
-                    '<div style="color:var(--t3);font-size:12px;font-family:var(--m);padding:8px 0">— signals appear after first message</div>',
+                    '<div style="color:var(--t3);font-size:12px;font-family:var(--m);padding:8px 0">— signals appear after first message</div>',  # noqa
                     unsafe_allow_html=True,
                 )
 
@@ -661,7 +660,7 @@ with T1:
             cls = "pc-y" if pred["understood"] else "pc-n"
             lbl = "✓  Understood" if pred["understood"] else "✗  Not Understood"
             st.markdown(
-                f'<div class="{cls} pc">{lbl}<div class="pc-sub">p = {pred["probability"]:.3f} &nbsp;·&nbsp; threshold = {pred.get("threshold",0.5):.3f} &nbsp;·&nbsp; conf = {pred["confidence"]:.3f}</div></div>',
+                f'<div class="{cls} pc">{lbl}<div class="pc-sub">p = {pred["probability"]:.3f} &nbsp;·&nbsp; threshold = {pred.get("threshold",0.5):.3f} &nbsp;·&nbsp; conf = {pred["confidence"]:.3f}</div></div>',  # noqa
                 unsafe_allow_html=True,
             )
 
@@ -718,7 +717,7 @@ with T1:
                 for dim, col_ in JCOLS.items():
                     s2 = judge.get(dim, 3)
                     st.markdown(
-                        f'<div class="pb-w"><div class="pb-h"><span style="color:{col_}">{dim}</span><span style="font-family:var(--m)">{s2}/5</span></div><div class="pb-t"><div class="pb-f" style="width:{s2/5*100:.0f}%;background:{col_}"></div></div></div>',
+                        f'<div class="pb-w"><div class="pb-h"><span style="color:{col_}">{dim}</span><span style="font-family:var(--m)">{s2}/5</span></div><div class="pb-t"><div class="pb-f" style="width:{s2/5*100:.0f}%;background:{col_}"></div></div></div>',  # noqa
                         unsafe_allow_html=True,
                     )
 
@@ -768,7 +767,7 @@ with T2:
         for topic, count in sorted(tc.items(), key=lambda x: -x[1]):
             pct = count / mx * 100
             st.markdown(
-                f'<div class="pb-w"><div class="pb-h"><span style="font-family:var(--m);font-size:11px;color:var(--t2)">{topic}</span><span style="font-family:var(--m);font-size:11px;color:var(--t3)">{count}</span></div><div class="pb-t"><div class="pb-f" style="width:{pct:.0f}%"></div></div></div>',
+                f'<div class="pb-w"><div class="pb-h"><span style="font-family:var(--m);font-size:11px;color:var(--t2)">{topic}</span><span style="font-family:var(--m);font-size:11px;color:var(--t3)">{count}</span></div><div class="pb-t"><div class="pb-f" style="width:{pct:.0f}%"></div></div></div>',  # noqa
                 unsafe_allow_html=True,
             )
 
@@ -779,7 +778,7 @@ with T2:
             )
             for name in st.session_state.up_names:
                 st.markdown(
-                    f'<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--b2);border:1px solid var(--bd);border-radius:var(--r1);margin:3px 0;font-size:12px"><span style="color:var(--ok)">✓</span><span style="font-family:var(--m);font-size:11px;color:var(--t1);flex:1">{name}</span><span style="font-family:var(--m);font-size:11px;color:var(--ok)">active</span></div>',
+                    f'<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--b2);border:1px solid var(--bd);border-radius:var(--r1);margin:3px 0;font-size:12px"><span style="color:var(--ok)">✓</span><span style="font-family:var(--m);font-size:11px;color:var(--t1);flex:1">{name}</span><span style="font-family:var(--m);font-size:11px;color:var(--ok)">active</span></div>',  # noqa
                     unsafe_allow_html=True,
                 )
 
@@ -788,14 +787,14 @@ with T2:
             '<div class="ct">Upload your documents</div>', unsafe_allow_html=True
         )
         st.markdown(
-            '<div style="font-size:12px;color:var(--t3);margin-bottom:10px;line-height:1.7">PDF, TXT, or CSV files. Chunked, embedded, and added to ChromaDB live.</div>',
+            '<div style="font-size:12px;color:var(--t3);margin-bottom:10px;line-height:1.7">PDF, TXT, or CSV files. Chunked, embedded, and added to ChromaDB live.</div>',  # noqa
             unsafe_allow_html=True,
         )
 
         # [U9] Show generate_upload_data.py instructions
         with st.expander("Generate sample upload files"):
             st.markdown(
-                '<div style="font-size:12px;color:var(--t2);line-height:1.9;font-family:var(--m)">Run this from your terminal to create 3 ready-to-upload files:<br><br><span style="color:var(--acc2)">python generate_upload_data.py</span><br><br>Creates: <span style="color:var(--ok)">ml_concepts.txt</span>, <span style="color:var(--ok)">deep_learning_notes.csv</span>, <span style="color:var(--ok)">rag_systems_guide.txt</span></div>',
+                '<div style="font-size:12px;color:var(--t2);line-height:1.9;font-family:var(--m)">Run this from your terminal to create 3 ready-to-upload files:<br><br><span style="color:var(--acc2)">python generate_upload_data.py</span><br><br>Creates: <span style="color:var(--ok)">ml_concepts.txt</span>, <span style="color:var(--ok)">deep_learning_notes.csv</span>, <span style="color:var(--ok)">rag_systems_guide.txt</span></div>',  # noqa
                 unsafe_allow_html=True,
             )
 
@@ -837,7 +836,7 @@ with T2:
                         n = bk.ingest_documents(docs)
                         st.session_state.up_names.append(f.name)
                         st.markdown(
-                            f'<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--b2);border:1px solid var(--bd);border-radius:var(--r1);margin:3px 0;font-size:12px"><span style="color:var(--ok)">✓</span><span style="font-family:var(--m);font-size:11px;flex:1">{f.name}{col_info}</span><span style="font-family:var(--m);font-size:11px;color:var(--ok)">{n} chunks</span></div>',
+                            f'<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--b2);border:1px solid var(--bd);border-radius:var(--r1);margin:3px 0;font-size:12px"><span style="color:var(--ok)">✓</span><span style="font-family:var(--m);font-size:11px;flex:1">{f.name}{col_info}</span><span style="font-family:var(--m);font-size:11px;color:var(--ok)">{n} chunks</span></div>',  # noqa
                             unsafe_allow_html=True,
                         )
                     else:
@@ -855,7 +854,7 @@ with T2:
         ingested = _is_ingested(key)
         with col:
             st.markdown(
-                f'<div style="background:var(--b2);border:1px solid var(--bd);border-radius:var(--r2);padding:14px 16px;margin-bottom:10px"><div style="font-size:13px;font-weight:500;color:var(--t1);margin-bottom:4px">{data["title"]}</div><div style="font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:8px">{data["desc"]}</div><div style="font-family:var(--m);font-size:11px;color:var(--t3)">{len(data["chunks"])} chunks · {data["topic"]}</div></div>',
+                f'<div style="background:var(--b2);border:1px solid var(--bd);border-radius:var(--r2);padding:14px 16px;margin-bottom:10px"><div style="font-size:13px;font-weight:500;color:var(--t1);margin-bottom:4px">{data["title"]}</div><div style="font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:8px">{data["desc"]}</div><div style="font-family:var(--m);font-size:11px;color:var(--t3)">{len(data["chunks"])} chunks · {data["topic"]}</div></div>',  # noqa
                 unsafe_allow_html=True,
             )
             if ingested:
@@ -903,7 +902,7 @@ with T3:
     c1.metric("Total Queries", stats["total_interactions"])
     c2.metric(
         "Understanding Rate",
-        f"{stats['understood_rate']*100:.1f}%" if stats["total_interactions"] else "—",
+        f"{stats['understood_rate'] * 100:.1f}%" if stats["total_interactions"] else "—",
     )
     c3.metric(
         "Avg Retrieval",
@@ -951,7 +950,7 @@ with T3:
                 pct = row["rate"] * 100
                 c_ = "#22c55e" if pct >= 60 else ("#f59e0b" if pct >= 40 else "#ef4444")
                 st.markdown(
-                    f'<div class="pb-w"><div class="pb-h"><span style="font-family:var(--m);font-size:11px;color:var(--t2)">{row["topic_detected"][:20]}</span><span style="font-family:var(--m);font-size:11px;color:var(--t1)">{int(row["n"])} · {pct:.0f}%</span></div><div class="pb-t"><div class="pb-f" style="width:{min(pct,100):.0f}%;background:{c_}"></div></div></div>',
+                    f'<div class="pb-w"><div class="pb-h"><span style="font-family:var(--m);font-size:11px;color:var(--t2)">{row["topic_detected"][:20]}</span><span style="font-family:var(--m);font-size:11px;color:var(--t1)">{int(row["n"])} · {pct:.0f}%</span></div><div class="pb-t"><div class="pb-f" style="width:{min(pct,100):.0f}%;background:{c_}"></div></div></div>',  # noqa
                     unsafe_allow_html=True,
                 )
         else:
@@ -1041,12 +1040,12 @@ with T3:
                 if dim in jdf.columns:
                     avg = float(jdf[dim].mean())
                     st.markdown(
-                        f'<div class="pb-w"><div class="pb-h"><span style="color:{col_};font-size:12px">{dim}</span><span style="font-family:var(--m);font-size:12px">{avg:.2f}/5</span></div><div class="pb-t"><div class="pb-f" style="width:{avg/5*100:.1f}%;background:{col_}"></div></div></div>',
+                        f'<div class="pb-w"><div class="pb-h"><span style="color:{col_};font-size:12px">{dim}</span><span style="font-family:var(--m);font-size:12px">{avg:.2f}/5</span></div><div class="pb-t"><div class="pb-f" style="width:{avg/5*100:.1f}%;background:{col_}"></div></div></div>',  # noqa
                         unsafe_allow_html=True,
                     )
             ov = float(jdf["overall"].mean()) if "overall" in jdf.columns else 0
             st.markdown(
-                f'<div style="text-align:center;margin-top:16px;padding:12px;background:var(--b2);border:1px solid var(--bd);border-radius:var(--r2)"><div style="font-family:var(--m);font-size:10px;color:var(--t3);letter-spacing:1.5px;margin-bottom:4px">OVERALL AVERAGE</div><div style="font-family:var(--m);font-size:22px;font-weight:500;color:var(--t1)">{ov:.2f}<span style="font-size:13px;color:var(--t3)">/5</span></div></div>',
+                f'<div style="text-align:center;margin-top:16px;padding:12px;background:var(--b2);border:1px solid var(--bd);border-radius:var(--r2)"><div style="font-family:var(--m);font-size:10px;color:var(--t3);letter-spacing:1.5px;margin-bottom:4px">OVERALL AVERAGE</div><div style="font-family:var(--m);font-size:22px;font-weight:500;color:var(--t1)">{ov:.2f}<span style="font-size:13px;color:var(--t3)">/5</span></div></div>',  # noqa
                 unsafe_allow_html=True,
             )
             if corr is not None:
@@ -1056,7 +1055,7 @@ with T3:
                     else ("mv-w" if abs(corr) > 0.2 else "mv-e")
                 )
                 st.markdown(
-                    f'<div class="mr" style="margin-top:10px"><span class="mk">Judge ↔ ML correlation</span><span class="mv {corr_c}">{corr:+.4f}</span></div>',
+                    f'<div class="mr" style="margin-top:10px"><span class="mk">Judge ↔ ML correlation</span><span class="mv {corr_c}">{corr:+.4f}</span></div>',  # noqa
                     unsafe_allow_html=True,
                 )
         else:
@@ -1098,7 +1097,7 @@ with T3:
         sc_ = "var(--warn)" if streak > 0 else "var(--ok)"
         pct_ = min(streak / 3 * 100, 100)
         st.markdown(
-            f'<div style="text-align:center;padding:10px 0 16px"><div style="font-family:var(--m);font-size:36px;font-weight:500;color:{sc_};line-height:1">{streak}</div><div style="font-size:12px;color:var(--t3);margin-top:5px">consecutive not-understood</div><div style="background:var(--bd2);border-radius:2px;height:3px;margin:12px 0"><div style="width:{pct_:.0f}%;height:3px;background:{sc_}"></div></div><div style="font-family:var(--m);font-size:11px;color:var(--t3)">escalates at 3 · de-escalates at 3 understood</div></div>',
+            f'<div style="text-align:center;padding:10px 0 16px"><div style="font-family:var(--m);font-size:36px;font-weight:500;color:{sc_};line-height:1">{streak}</div><div style="font-size:12px;color:var(--t3);margin-top:5px">consecutive not-understood</div><div style="background:var(--bd2);border-radius:2px;height:3px;margin:12px 0"><div style="width:{pct_:.0f}%;height:3px;background:{sc_}"></div></div><div style="font-family:var(--m);font-size:11px;color:var(--t3)">escalates at 3 · de-escalates at 3 understood</div></div>',  # noqa
             unsafe_allow_html=True,
         )
         for k, v in [
@@ -1141,7 +1140,7 @@ with T3:
                         else "mv-w"
                     )
                     st.markdown(
-                        f'<div class="mr"><span class="mk" style="font-family:var(--m);font-size:11px;min-width:108px">{ts}</span><span class="mv {c_act}">{row.get("action","")}</span><span class="mv" style="font-size:10px;color:var(--t3)">{mb_str}{delta}</span></div>',
+                        f'<div class="mr"><span class="mk" style="font-family:var(--m);font-size:11px;min-width:108px">{ts}</span><span class="mv {c_act}">{row.get("action","")}</span><span class="mv" style="font-size:10px;color:var(--t3)">{mb_str}{delta}</span></div>',  # noqa
                         unsafe_allow_html=True,
                     )
             else:
@@ -1195,7 +1194,7 @@ with T3:
             ("6", "Every 30 interactions", "Retrain ML model on real data"),
         ]:
             st.markdown(
-                f'<div class="mr"><span class="mk" style="font-family:var(--m);font-size:11px;color:var(--acc2);min-width:18px">{num}</span><span class="mk" style="flex:1;min-width:220px">{trigger}</span><span class="mv mv-w">{action}</span></div>',
+                f'<div class="mr"><span class="mk" style="font-family:var(--m);font-size:11px;color:var(--acc2);min-width:18px">{num}</span><span class="mk" style="flex:1;min-width:220px">{trigger}</span><span class="mv mv-w">{action}</span></div>',  # noqa
                 unsafe_allow_html=True,
             )
 
@@ -1208,23 +1207,23 @@ with T3:
                 """<div class="arch">
 <span style="color:var(--t3)">USER QUERY</span><br>
 &nbsp;&nbsp;→ [1]  <span class="ac">TOPIC ROUTER</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keyword → topic filter<br>
-&nbsp;&nbsp;→ [2]  <span class="ac">QUERY REWRITE</span>&nbsp;&nbsp;&nbsp;&nbsp;LLM reformulation + variant generation<br>
-&nbsp;&nbsp;→ [3]  <span class="ac">EMBED</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;all-MiniLM-L6-v2 · 384-dim<br>
+&nbsp;&nbsp;→ [2]  <span class="ac">QUERY REWRITE</span>&nbsp;&nbsp;&nbsp;&nbsp;LLM reformulation + variant generation<br>  # noqa
+&nbsp;&nbsp;→ [3]  <span class="ac">EMBED</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;all-MiniLM-L6-v2 · 384-dim<br>  # noqa
 &nbsp;&nbsp;→ [4]  <span class="ac">HYBRID RETRIEVE</span>&nbsp;&nbsp;&nbsp;BM25 + dense → RRF · top-10<br>
-&nbsp;&nbsp;→ [5]  <span class="ac">SCORE FILTER</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;remove docs below threshold<br>
+&nbsp;&nbsp;→ [5]  <span class="ac">SCORE FILTER</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;remove docs below threshold<br>  # noqa
 &nbsp;&nbsp;→ [6]  <span class="ac">CROSS-ENCODER</span>&nbsp;&nbsp;&nbsp;&nbsp;ms-marco re-ranking · top-6<br>
 &nbsp;&nbsp;→ [7]  <span class="ac">MEMORY INJECT</span>&nbsp;&nbsp;&nbsp;&nbsp;last 3 turns (SQLite-persisted)<br>
-&nbsp;&nbsp;→ [8]  <span class="ac">A/B PROMPT</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MD5 hash → v1/v2/v3/v4<br>
-&nbsp;&nbsp;→ [9]  <span class="ac">GENERATE</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Groq llama-3.1-8b-instant<br>
-&nbsp;&nbsp;→ [10] <span class="aa">HAL GUARD</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;term overlap risk score<br>
-&nbsp;&nbsp;→ [11] <span class="ag">FEATURES</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;9 base + 3 interaction features<br>
-&nbsp;&nbsp;→ [12] <span class="ag">ML PREDICT</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LR/RF/GBM/XGB · calibrated threshold<br>
-&nbsp;&nbsp;→ [13] <span class="ag">RAGAS</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;context precision/recall/faithfulness<br>
-&nbsp;&nbsp;→ [14] <span class="ag">LLM JUDGE</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5-dim eval every query<br>
-&nbsp;&nbsp;→ [15] <span class="aa">FEEDBACK</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6 rules · bi-directional · active behaviors<br>
-&nbsp;&nbsp;→ [16] <span class="aa">PSI DRIFT</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;auto-detect + retrain every 20 queries<br>
-&nbsp;&nbsp;→ [17] <span class="aa">LOG</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SQLite · 4 tables<br>
-&nbsp;&nbsp;→ [18] <span class="av">IMPROVE</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;next query uses updated state
+&nbsp;&nbsp;→ [8]  <span class="ac">A/B PROMPT</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MD5 hash → v1/v2/v3/v4<br>  # noqa
+&nbsp;&nbsp;→ [9]  <span class="ac">GENERATE</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Groq llama-3.1-8b-instant<br>  # noqa
+&nbsp;&nbsp;→ [10] <span class="aa">HAL GUARD</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;term overlap risk score<br>  # noqa
+&nbsp;&nbsp;→ [11] <span class="ag">FEATURES</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;9 base + 3 interaction features<br>  # noqa
+&nbsp;&nbsp;→ [12] <span class="ag">ML PREDICT</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LR/RF/GBM/XGB · calibrated threshold<br>  # noqa
+&nbsp;&nbsp;→ [13] <span class="ag">RAGAS</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;context precision/recall/faithfulness<br>  # noqa
+&nbsp;&nbsp;→ [14] <span class="ag">LLM JUDGE</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5-dim eval every query<br>  # noqa
+&nbsp;&nbsp;→ [15] <span class="aa">FEEDBACK</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6 rules · bi-directional · active behaviors<br>  # noqa
+&nbsp;&nbsp;→ [16] <span class="aa">PSI DRIFT</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;auto-detect + retrain every 20 queries<br>  # noqa
+&nbsp;&nbsp;→ [17] <span class="aa">LOG</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SQLite · 4 tables<br>  # noqa
+&nbsp;&nbsp;→ [18] <span class="av">IMPROVE</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;next query uses updated state  # noqa
 </div>""",
                 unsafe_allow_html=True,
             )
@@ -1243,7 +1242,7 @@ with T3:
                 ("UI", "Streamlit 5 tabs", "Production-ready"),
             ]:
                 st.markdown(
-                    f'<div class="mr"><span class="mk" style="font-family:var(--m);font-size:11px;min-width:70px">{layer}</span><span class="mv mv-a" style="min-width:130px">{tool}</span><span class="mv">{why}</span></div>',
+                    f'<div class="mr"><span class="mk" style="font-family:var(--m);font-size:11px;min-width:70px">{layer}</span><span class="mv mv-a" style="min-width:130px">{tool}</span><span class="mv">{why}</span></div>',  # noqa
                     unsafe_allow_html=True,
                 )
 
@@ -1301,9 +1300,9 @@ with T4:
         if metrics:
             for k, v in [
                 ("Best model", metrics.get("best_model", "—")),
-                ("Accuracy", f"{metrics.get('accuracy',0):.4f}"),
-                ("F1 score", f"{metrics.get('f1_score',0):.4f}"),
-                ("ROC-AUC", f"{metrics.get('roc_auc',0):.4f}"),
+                ("Accuracy", f"{metrics.get('accuracy', 0):.4f}"),
+                ("F1 score", f"{metrics.get('f1_score', 0):.4f}"),
+                ("ROC-AUC", f"{metrics.get('roc_auc', 0):.4f}"),
                 ("Opt threshold", f"{opt_thr:.4f}  (calibrated via PR curve)"),
                 ("Train samples", str(metrics.get("train_size", "—"))),
                 ("Val samples", str(metrics.get("val_size", "—"))),
@@ -1325,7 +1324,7 @@ with T4:
             ib = name == metrics.get("best_model")
             c_ = "#818cf8" if ib else "#52525b"
             st.markdown(
-                f'<div class="pb-w"><div class="pb-h"><span style="color:{c_};font-family:var(--m);font-size:11px">{"★ " if ib else ""}{name}</span><span style="font-family:var(--m);font-size:11px">{res["mean_auc"]:.4f} ± {res["std"]:.4f}</span></div><div class="pb-t"><div class="pb-f" style="width:{res["mean_auc"]*100:.1f}%;background:{c_}"></div></div></div>',
+                f'<div class="pb-w"><div class="pb-h"><span style="color:{c_};font-family:var(--m);font-size:11px">{"★ " if ib else ""}{name}</span><span style="font-family:var(--m);font-size:11px">{res["mean_auc"]:.4f} ± {res["std"]:.4f}</span></div><div class="pb-t"><div class="pb-f" style="width:{res["mean_auc"]*100:.1f}%;background:{c_}"></div></div></div>',  # noqa
                 unsafe_allow_html=True,
             )
 
@@ -1339,24 +1338,24 @@ with T4:
             cg1, cg2 = st.columns(2)
             with cg1:
                 st.markdown(
-                    f'<div class="cm-cell" style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#22c55e">TN = {tn}</div>',
+                    f'<div class="cm-cell" style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#22c55e">TN = {tn}</div>',  # noqa
                     unsafe_allow_html=True,
                 )
                 st.markdown(
-                    f'<div class="cm-cell" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#ef4444;margin-top:4px">FN = {fn}</div>',
+                    f'<div class="cm-cell" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#ef4444;margin-top:4px">FN = {fn}</div>',  # noqa
                     unsafe_allow_html=True,
                 )
             with cg2:
                 st.markdown(
-                    f'<div class="cm-cell" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#ef4444">FP = {fp}</div>',
+                    f'<div class="cm-cell" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#ef4444">FP = {fp}</div>',  # noqa
                     unsafe_allow_html=True,
                 )
                 st.markdown(
-                    f'<div class="cm-cell" style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#22c55e;margin-top:4px">TP = {tp}</div>',
+                    f'<div class="cm-cell" style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#22c55e;margin-top:4px">TP = {tp}</div>',  # noqa
                     unsafe_allow_html=True,
                 )
             st.markdown(
-                '<div style="font-family:var(--m);font-size:10px;color:var(--t3);margin-top:6px;text-align:center">Predicted: Not / Understood — Actual: Not / Understood</div>',
+                '<div style="font-family:var(--m);font-size:10px;color:var(--t3);margin-top:6px;text-align:center">Predicted: Not / Understood — Actual: Not / Understood</div>',  # noqa
                 unsafe_allow_html=True,
             )
 
@@ -1368,22 +1367,22 @@ with T4:
             base_fi = {k: v for k, v in fi.items() if k in bk.FEATURES[:9]}
             inter_fi = {k: v for k, v in fi.items() if k in bk.FEATURES[9:]}
             st.markdown(
-                '<div style="font-family:var(--m);font-size:10px;color:var(--acc2);letter-spacing:1px;margin-bottom:6px">BASE FEATURES</div>',
+                '<div style="font-family:var(--m);font-size:10px;color:var(--acc2);letter-spacing:1px;margin-bottom:6px">BASE FEATURES</div>',  # noqa
                 unsafe_allow_html=True,
             )
             for feat, imp in sorted(base_fi.items(), key=lambda x: -x[1]):
                 st.markdown(
-                    f'<div class="pb-w"><div class="pb-h"><span style="font-family:var(--m);font-size:11px;color:var(--acc2)">{feat}</span><span style="font-family:var(--m);font-size:11px">{imp:.4f}</span></div><div class="pb-t"><div class="pb-f" style="width:{imp/mx*100:.1f}%"></div></div></div>',
+                    f'<div class="pb-w"><div class="pb-h"><span style="font-family:var(--m);font-size:11px;color:var(--acc2)">{feat}</span><span style="font-family:var(--m);font-size:11px">{imp:.4f}</span></div><div class="pb-t"><div class="pb-f" style="width:{imp/mx*100:.1f}%"></div></div></div>',  # noqa
                     unsafe_allow_html=True,
                 )
             if inter_fi:
                 st.markdown(
-                    '<div style="font-family:var(--m);font-size:10px;color:var(--warn);letter-spacing:1px;margin:10px 0 6px">INTERACTION FEATURES</div>',
+                    '<div style="font-family:var(--m);font-size:10px;color:var(--warn);letter-spacing:1px;margin:10px 0 6px">INTERACTION FEATURES</div>',  # noqa
                     unsafe_allow_html=True,
                 )
                 for feat, imp in sorted(inter_fi.items(), key=lambda x: -x[1]):
                     st.markdown(
-                        f'<div class="pb-w"><div class="pb-h"><span style="font-family:var(--m);font-size:11px;color:var(--warn)">{feat}</span><span style="font-family:var(--m);font-size:11px">{imp:.4f}</span></div><div class="pb-t"><div class="pb-f" style="width:{imp/mx*100:.1f}%;background:var(--warn)"></div></div></div>',
+                        f'<div class="pb-w"><div class="pb-h"><span style="font-family:var(--m);font-size:11px;color:var(--warn)">{feat}</span><span style="font-family:var(--m);font-size:11px">{imp:.4f}</span></div><div class="pb-t"><div class="pb-f" style="width:{imp/mx*100:.1f}%;background:var(--warn)"></div></div></div>',  # noqa
                         unsafe_allow_html=True,
                     )
         else:
@@ -1414,7 +1413,7 @@ with T4:
         ]:
             c_ = "var(--warn)" if "[interaction]" in d else "var(--acc2)"
             st.markdown(
-                f'<div class="mr"><span class="mk" style="font-family:var(--m);font-size:11px;color:{c_};min-width:148px">{f}</span><span class="mv" style="font-size:11px;text-align:left">{d}</span></div>',
+                f'<div class="mr"><span class="mk" style="font-family:var(--m);font-size:11px;color:{c_};min-width:148px">{f}</span><span class="mv" style="font-size:11px;text-align:left">{d}</span></div>',  # noqa
                 unsafe_allow_html=True,
             )
 
@@ -1423,7 +1422,7 @@ with T4:
     # [U2] Precision-Recall sandbox note
     st.markdown('<div class="ct">Prediction sandbox</div>', unsafe_allow_html=True)
     st.markdown(
-        f'<div style="font-size:12px;color:var(--t3);margin-bottom:14px">Calibrated threshold = <span style="color:var(--acc2);font-family:var(--m)">{opt_thr:.4f}</span> (optimized via PR curve on validation set). Adjust features to see live predictions.</div>',
+        f'<div style="font-size:12px;color:var(--t3);margin-bottom:14px">Calibrated threshold = <span style="color:var(--acc2);font-family:var(--m)">{opt_thr:.4f}</span> (optimized via PR curve on validation set). Adjust features to see live predictions.</div>',  # noqa
         unsafe_allow_html=True,
     )
 
@@ -1457,7 +1456,7 @@ with T4:
     lbl = "✓  Understood" if p["understood"] else "✗  Not Understood"
     # [U12] Show calibrated threshold in sandbox
     st.markdown(
-        f'<div class="{cls} pc" style="margin-top:12px;text-align:center">{lbl}<div class="pc-sub">probability = {p["probability"]:.4f} &nbsp;·&nbsp; threshold = {p["threshold"]:.4f} &nbsp;·&nbsp; confidence = {p["confidence"]:.4f}</div></div>',
+        f'<div class="{cls} pc" style="margin-top:12px;text-align:center">{lbl}<div class="pc-sub">probability = {p["probability"]:.4f} &nbsp;·&nbsp; threshold = {p["threshold"]:.4f} &nbsp;·&nbsp; confidence = {p["confidence"]:.4f}</div></div>',  # noqa
         unsafe_allow_html=True,
     )
     st.markdown("</div>", unsafe_allow_html=True)
@@ -1471,7 +1470,7 @@ with T5:
         '<div class="ct">Automated test suite — 22 tests</div>', unsafe_allow_html=True
     )
     st.markdown(
-        '<div style="font-size:12px;color:var(--t3);margin-bottom:18px;line-height:1.7">Every pipeline component verified end-to-end. Covers all new v5 features.</div>',
+        '<div style="font-size:12px;color:var(--t3);margin-bottom:18px;line-height:1.7">Every pipeline component verified end-to-end. Covers all new v5 features.</div>',  # noqa
         unsafe_allow_html=True,
     )
 
@@ -1480,7 +1479,7 @@ with T5:
         color = "var(--ok)" if status == "pass" else "var(--err)"
         ts = f'<span class="tt">{elapsed:.2f}s</span>' if elapsed is not None else ""
         st.markdown(
-            f'<div class="tr"><span class="ti" style="color:{color}">{icon}</span><span class="tl">{label}</span><span class="td">{str(detail)[:110]}</span>{ts}</div>',
+            f'<div class="tr"><span class="ti" style="color:{color}">{icon}</span><span class="tl">{label}</span><span class="td">{str(detail)[:110]}</span>{ts}</div>',  # noqa
             unsafe_allow_html=True,
         )
 
@@ -1494,7 +1493,7 @@ with T5:
         results_tests = []
         _rag = None
         st.markdown(
-            '<div style="background:var(--b1);border:1px solid var(--bd);border-radius:var(--r2);padding:4px 0;margin-top:16px">',
+            '<div style="background:var(--b1);border:1px solid var(--bd);border-radius:var(--r2);padding:4px 0;margin-top:16px">',  # noqa
             unsafe_allow_html=True,
         )
 
@@ -1536,7 +1535,7 @@ with T5:
                 elif test_num == 2:
                     shape = bk.embed(["test"]).shape
                     assert shape[1] == 384
-                    detail = f"shape=(1,384)"
+                    detail = "shape=(1,384)"
 
                 elif test_num == 3:
                     cnt = bk.get_collection().count()
@@ -1606,7 +1605,7 @@ with T5:
                         for k in ["context_precision", "context_recall", "faithfulness"]
                     )
                     assert all(0 <= v <= 1 for v in ragas.values())
-                    detail = f"cp={ragas['context_precision']:.3f} cr={ragas['context_recall']:.3f} f={ragas['faithfulness']:.3f}"
+                    detail = f"cp={ragas['context_precision']:.3f} cr={ragas['context_recall']:.3f} f={ragas['faithfulness']:.3f}"  # noqa
 
                 elif test_num == 14:
                     _rag = bk.rag_query(TEST_Q, "ts_sess")
@@ -1647,7 +1646,7 @@ with T5:
                     p2 = bk.predict_understanding(feat)
                     assert 0 <= p2["probability"] <= 1
                     assert "threshold" in p2
-                    detail = f"p={p2['probability']:.4f} · thr={p2['threshold']:.4f} · {'Understood' if p2['understood'] else 'Not Understood'}"
+                    detail = f"p={p2['probability']:.4f} · thr={p2['threshold']:.4f} · {'Understood' if p2['understood'] else 'Not Understood'}"  # noqa
 
                 elif test_num == 17:
                     # Test both escalation and de-escalation
@@ -1738,7 +1737,7 @@ with T5:
                     )
                     assert "ragas" in full
                     assert "threshold" in full["prediction"]
-                    detail = f"p={full['prediction']['probability']:.3f} · thr={full['prediction']['threshold']:.3f} · {full['latency_sec']}s"
+                    detail = f"p={full['prediction']['probability']:.3f} · thr={full['prediction']['threshold']:.3f} · {full['latency_sec']}s"  # noqa
 
                 _tr(label, "pass", detail, time.time() - t0)
                 results_tests.append(True)
@@ -1756,7 +1755,7 @@ with T5:
             "var(--ok)" if pct >= 90 else ("var(--warn)" if pct >= 70 else "var(--err)")
         )
         st.markdown(
-            f'<div class="tsc"><div class="tsp"><div class="tsn" style="color:{sc_}">{pct}%</div><div class="tsl">PASS RATE</div></div><div style="flex:1"><div style="background:var(--bd2);border-radius:3px;height:6px;margin-bottom:10px"><div style="width:{pct}%;height:6px;border-radius:3px;background:{sc_}"></div></div><div style="font-family:var(--m);font-size:12px"><span style="color:var(--ok)">✓ {passed} passed</span>&nbsp;&nbsp;<span style="color:var(--err)">✗ {failed} failed</span>&nbsp;&nbsp;<span style="color:var(--t3)">{total} total</span></div></div></div>',
+            f'<div class="tsc"><div class="tsp"><div class="tsn" style="color:{sc_}">{pct}%</div><div class="tsl">PASS RATE</div></div><div style="flex:1"><div style="background:var(--bd2);border-radius:3px;height:6px;margin-bottom:10px"><div style="width:{pct}%;height:6px;border-radius:3px;background:{sc_}"></div></div><div style="font-family:var(--m);font-size:12px"><span style="color:var(--ok)">✓ {passed} passed</span>&nbsp;&nbsp;<span style="color:var(--err)">✗ {failed} failed</span>&nbsp;&nbsp;<span style="color:var(--t3)">{total} total</span></div></div></div>',  # noqa
             unsafe_allow_html=True,
         )
         if failed == 0:
@@ -1769,7 +1768,7 @@ with T5:
             )
     else:
         st.markdown(
-            '<div class="empty">22 automated tests covering all v5 features:<br>DB · Embeddings · ChromaDB · Topic router · Dense/BM25/Hybrid retrieval · Score filter · Cross-encoder rerank · Query rewriter · Hallucination guard · Diversity scorer · RAGAS metrics · Full RAG pipeline · 12-feature vector · Calibrated threshold · Bi-directional feedback · A/B assignment · LLM Judge · Memory · SQLite · End-to-end</div>',
+            '<div class="empty">22 automated tests covering all v5 features:<br>DB · Embeddings · ChromaDB · Topic router · Dense/BM25/Hybrid retrieval · Score filter · Cross-encoder rerank · Query rewriter · Hallucination guard · Diversity scorer · RAGAS metrics · Full RAG pipeline · 12-feature vector · Calibrated threshold · Bi-directional feedback · A/B assignment · LLM Judge · Memory · SQLite · End-to-end</div>',  # noqa
             unsafe_allow_html=True,
         )
 

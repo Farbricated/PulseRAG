@@ -41,7 +41,7 @@ import warnings
 from collections import defaultdict, deque
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from pathlib import Path
+
 from typing import Callable, Optional
 
 import numpy as np
@@ -181,252 +181,252 @@ KNOWLEDGE_DOCS: list[dict] = [
     {
         "id": "ml_001",
         "topic": "machine_learning",
-        "text": "Machine learning is a subset of artificial intelligence that enables systems to learn and improve from experience without being explicitly programmed. It focuses on developing algorithms that can access data and use it to learn for themselves. The process begins with observations—examples, direct experience, or instruction—so that computers can make better decisions in the future without human intervention for each case.",
+        "text": "Machine learning is a subset of artificial intelligence that enables systems to learn and improve from experience without being explicitly programmed. It focuses on developing algorithms that can access data and use it to learn for themselves. The process begins with observations—examples, direct experience, or instruction—so that computers can make better decisions in the future without human intervention for each case.",  # noqa: E501
     },
     {
         "id": "ml_002",
         "topic": "machine_learning",
-        "text": "Supervised learning trains models on labeled input-output pairs. Common algorithms include linear regression, logistic regression, decision trees, random forests, support vector machines, and neural networks. Model performance is measured on held-out test data to estimate generalization.",
+        "text": "Supervised learning trains models on labeled input-output pairs. Common algorithms include linear regression, logistic regression, decision trees, random forests, support vector machines, and neural networks. Model performance is measured on held-out test data to estimate generalization.",  # noqa: E501
     },
     {
         "id": "ml_003",
         "topic": "machine_learning",
-        "text": "Unsupervised learning finds hidden patterns in unlabeled data. K-means clustering partitions data into k groups by minimizing within-cluster variance. DBSCAN finds density-based clusters. PCA and t-SNE compress high-dimensional data for visualization and feature extraction.",
+        "text": "Unsupervised learning finds hidden patterns in unlabeled data. K-means clustering partitions data into k groups by minimizing within-cluster variance. DBSCAN finds density-based clusters. PCA and t-SNE compress high-dimensional data for visualization and feature extraction.",  # noqa: E501
     },
     {
         "id": "ml_004",
         "topic": "machine_learning",
-        "text": "Reinforcement learning trains agents to maximize cumulative reward by interacting with an environment. Key algorithms: Q-learning, Deep Q-Networks, Actor-Critic, PPO. Used in robotics, games, and recommendation systems.",
+        "text": "Reinforcement learning trains agents to maximize cumulative reward by interacting with an environment. Key algorithms: Q-learning, Deep Q-Networks, Actor-Critic, PPO. Used in robotics, games, and recommendation systems.",  # noqa: E501
     },
     {
         "id": "ml_005",
         "topic": "machine_learning",
-        "text": "Ensemble methods combine multiple models. Bagging (Random Forest) trains on random subsamples. Boosting (AdaBoost, GBM, XGBoost) trains sequentially. Stacking uses a meta-learner to combine base predictions.",
+        "text": "Ensemble methods combine multiple models. Bagging (Random Forest) trains on random subsamples. Boosting (AdaBoost, GBM, XGBoost) trains sequentially. Stacking uses a meta-learner to combine base predictions.",  # noqa: E501
     },
     {
         "id": "ml_006",
         "topic": "machine_learning",
-        "text": "Bias-variance tradeoff is fundamental. High bias = underfitting. High variance = overfitting. Regularization (L1 Lasso, L2 Ridge, elastic net) penalizes complexity to balance this tradeoff.",
+        "text": "Bias-variance tradeoff is fundamental. High bias = underfitting. High variance = overfitting. Regularization (L1 Lasso, L2 Ridge, elastic net) penalizes complexity to balance this tradeoff.",  # noqa: E501
     },
     {
         "id": "sys_006",
         "topic": "machine_learning",
-        "text": "Imbalanced classification strategies: SMOTE oversample, random undersample, class_weight='balanced'. Evaluation must use F1, ROC-AUC, or Precision-Recall AUC — never raw accuracy on imbalanced datasets.",
+        "text": "Imbalanced classification strategies: SMOTE oversample, random undersample, class_weight='balanced'. Evaluation must use F1, ROC-AUC, or Precision-Recall AUC — never raw accuracy on imbalanced datasets.",  # noqa: E501
     },
     {
         "id": "dl_001",
         "topic": "deep_learning",
-        "text": "Deep learning uses neural networks with many layers. Backpropagation computes gradients via the chain rule. Gradient descent updates weights to minimize loss. Excels at vision, NLP, and speech tasks.",
+        "text": "Deep learning uses neural networks with many layers. Backpropagation computes gradients via the chain rule. Gradient descent updates weights to minimize loss. Excels at vision, NLP, and speech tasks.",  # noqa: E501
     },
     {
         "id": "dl_002",
         "topic": "deep_learning",
-        "text": "Convolutional Neural Networks process grid-like data. Convolutional layers detect local patterns. Max pooling reduces spatial dimensions. Notable architectures: AlexNet, VGG, ResNet, EfficientNet.",
+        "text": "Convolutional Neural Networks process grid-like data. Convolutional layers detect local patterns. Max pooling reduces spatial dimensions. Notable architectures: AlexNet, VGG, ResNet, EfficientNet.",  # noqa: E501
     },
     {
         "id": "dl_003",
         "topic": "deep_learning",
-        "text": "Recurrent Neural Networks process sequential data via hidden state. LSTMs use gating mechanisms. GRUs are simpler. Used in time-series, speech, and text generation.",
+        "text": "Recurrent Neural Networks process sequential data via hidden state. LSTMs use gating mechanisms. GRUs are simpler. Used in time-series, speech, and text generation.",  # noqa: E501
     },
     {
         "id": "dl_004",
         "topic": "deep_learning",
-        "text": "The Transformer uses self-attention to process all tokens in parallel. Multi-head attention attends to different subspaces simultaneously. BERT (encoder-only), GPT (decoder-only), T5 (encoder-decoder).",
+        "text": "The Transformer uses self-attention to process all tokens in parallel. Multi-head attention attends to different subspaces simultaneously. BERT (encoder-only), GPT (decoder-only), T5 (encoder-decoder).",  # noqa: E501
     },
     {
         "id": "dl_005",
         "topic": "deep_learning",
-        "text": "Transfer learning reuses pretrained models. Fine-tuning updates all or some weights. Feature extraction freezes pretrained weights and trains only a new head. Dramatically reduces data and compute required.",
+        "text": "Transfer learning reuses pretrained models. Fine-tuning updates all or some weights. Feature extraction freezes pretrained weights and trains only a new head. Dramatically reduces data and compute required.",  # noqa: E501
     },
     {
         "id": "sys_007",
         "topic": "deep_learning",
-        "text": "Scaled dot-product attention: Attention(Q,K,V) = softmax(QK^T/sqrt(d_k))V. Multi-head attention runs several attention operations in parallel and concatenates results.",
+        "text": "Scaled dot-product attention: Attention(Q,K,V) = softmax(QK^T/sqrt(d_k))V. Multi-head attention runs several attention operations in parallel and concatenates results.",  # noqa: E501
     },
     {
         "id": "rag_001",
         "topic": "rag",
-        "text": "Retrieval-Augmented Generation grounds LLM responses in external knowledge. Pipeline: embed query → search vector DB → inject top-k docs as context → generate conditioned response. Reduces hallucination and enables knowledge updates without retraining.",
+        "text": "Retrieval-Augmented Generation grounds LLM responses in external knowledge. Pipeline: embed query → search vector DB → inject top-k docs as context → generate conditioned response. Reduces hallucination and enables knowledge updates without retraining.",  # noqa: E501
     },
     {
         "id": "rag_002",
         "topic": "rag",
-        "text": "Vector databases store embeddings for ANN search. HNSW enables sub-linear complexity. ChromaDB is open-source and local-first. Pinecone, Weaviate, Milvus are managed alternatives.",
+        "text": "Vector databases store embeddings for ANN search. HNSW enables sub-linear complexity. ChromaDB is open-source and local-first. Pinecone, Weaviate, Milvus are managed alternatives.",  # noqa: E501
     },
     {
         "id": "rag_003",
         "topic": "rag",
-        "text": "Chunking strategy determines retrieval quality. Fixed-size, sentence-based, recursive, and semantic chunking are common approaches. Optimal chunk size 256-1024 tokens depends on embedding model context window.",
+        "text": "Chunking strategy determines retrieval quality. Fixed-size, sentence-based, recursive, and semantic chunking are common approaches. Optimal chunk size 256-1024 tokens depends on embedding model context window.",  # noqa: E501
     },
     {
         "id": "rag_004",
         "topic": "rag",
-        "text": "Advanced RAG: HyDE generates hypothetical answers for retrieval. Query rewriting uses LLM to reformulate. Multi-query retrieval merges results. Re-ranking with cross-encoders improves precision.",
+        "text": "Advanced RAG: HyDE generates hypothetical answers for retrieval. Query rewriting uses LLM to reformulate. Multi-query retrieval merges results. Re-ranking with cross-encoders improves precision.",  # noqa: E501
     },
     {
         "id": "rag_005",
         "topic": "rag",
-        "text": "Hybrid search combines dense vector search with sparse BM25. Dense retrieval captures semantic meaning. Sparse retrieval handles exact keyword matching. RRF merges ranked lists without score normalization.",
+        "text": "Hybrid search combines dense vector search with sparse BM25. Dense retrieval captures semantic meaning. Sparse retrieval handles exact keyword matching. RRF merges ranked lists without score normalization.",  # noqa: E501
     },
     {
         "id": "sys_001",
         "topic": "rag",
-        "text": "Agentic RAG extends basic RAG with tool-use and multi-step reasoning. Agents decompose complex queries into sub-questions and iteratively retrieve additional context. LangChain, LlamaIndex, OpenAI Assistants provide frameworks.",
+        "text": "Agentic RAG extends basic RAG with tool-use and multi-step reasoning. Agents decompose complex queries into sub-questions and iteratively retrieve additional context. LangChain, LlamaIndex, OpenAI Assistants provide frameworks.",  # noqa: E501
     },
     {
         "id": "eval_001",
         "topic": "evaluation",
-        "text": "Classification metrics: Accuracy, Precision, Recall, F1, ROC-AUC. Macro averaging treats all classes equally; weighted averaging accounts for class imbalance.",
+        "text": "Classification metrics: Accuracy, Precision, Recall, F1, ROC-AUC. Macro averaging treats all classes equally; weighted averaging accounts for class imbalance.",  # noqa: E501
     },
     {
         "id": "eval_002",
         "topic": "evaluation",
-        "text": "Cross-validation: K-fold CV splits data into k partitions. Stratified k-fold preserves class proportions — essential for imbalanced datasets. Nested CV avoids optimistic bias.",
+        "text": "Cross-validation: K-fold CV splits data into k partitions. Stratified k-fold preserves class proportions — essential for imbalanced datasets. Nested CV avoids optimistic bias.",  # noqa: E501
     },
     {
         "id": "eval_003",
         "topic": "evaluation",
-        "text": "RAGAS metrics: context_precision, context_recall, faithfulness, answer_relevancy. LLM-as-Judge uses a strong model to score responses without human annotation.",
+        "text": "RAGAS metrics: context_precision, context_recall, faithfulness, answer_relevancy. LLM-as-Judge uses a strong model to score responses without human annotation.",  # noqa: E501
     },
     {
         "id": "eval_004",
         "topic": "evaluation",
-        "text": "Calibration measures if predicted probabilities reflect true likelihoods. Platt scaling and isotonic regression are post-hoc calibration methods. Expected Calibration Error quantifies deviation.",
+        "text": "Calibration measures if predicted probabilities reflect true likelihoods. Platt scaling and isotonic regression are post-hoc calibration methods. Expected Calibration Error quantifies deviation.",  # noqa: E501
     },
     {
         "id": "sys_003",
         "topic": "evaluation",
-        "text": "A/B testing compares system variants by routing different user segments to different versions. Statistical significance via t-test or chi-squared with alpha=0.05. Cohen's d measures practical significance.",
+        "text": "A/B testing compares system variants by routing different user segments to different versions. Statistical significance via t-test or chi-squared with alpha=0.05. Cohen's d measures practical significance.",  # noqa: E501
     },
     {
         "id": "nlp_001",
         "topic": "nlp",
-        "text": "NLP enables computers to understand human language. Core tasks: tokenization, POS tagging, NER, dependency parsing. Higher-level tasks: sentiment analysis, machine translation, summarization. Modern NLP uses pre-trained transformers.",
+        "text": "NLP enables computers to understand human language. Core tasks: tokenization, POS tagging, NER, dependency parsing. Higher-level tasks: sentiment analysis, machine translation, summarization. Modern NLP uses pre-trained transformers.",  # noqa: E501
     },
     {
         "id": "nlp_002",
         "topic": "nlp",
-        "text": "Word embeddings: Word2Vec trains on co-occurrence. GloVe uses global statistics. FastText handles OOV via subword n-grams. BERT and RoBERTa produce contextual embeddings capturing polysemy.",
+        "text": "Word embeddings: Word2Vec trains on co-occurrence. GloVe uses global statistics. FastText handles OOV via subword n-grams. BERT and RoBERTa produce contextual embeddings capturing polysemy.",  # noqa: E501
     },
     {
         "id": "nlp_003",
         "topic": "nlp",
-        "text": "LLMs like GPT-4, Llama 3, Claude are transformer-based models trained on next-token prediction. Emergent capabilities: in-context learning, chain-of-thought reasoning, instruction following.",
+        "text": "LLMs like GPT-4, Llama 3, Claude are transformer-based models trained on next-token prediction. Emergent capabilities: in-context learning, chain-of-thought reasoning, instruction following.",  # noqa: E501
     },
     {
         "id": "sys_009",
         "topic": "nlp",
-        "text": "Tokenization: BPE merges frequent character pairs. WordPiece (BERT) and SentencePiece (T5, LLaMA) are variants. One token is approximately 4 characters in English.",
+        "text": "Tokenization: BPE merges frequent character pairs. WordPiece (BERT) and SentencePiece (T5, LLaMA) are variants. One token is approximately 4 characters in English.",  # noqa: E501
     },
     {
         "id": "pipe_001",
         "topic": "ml_pipeline",
-        "text": "ML pipelines automate: data ingestion, validation, preprocessing, feature engineering, training, evaluation, deployment. MLflow tracks experiments. DVC versions datasets.",
+        "text": "ML pipelines automate: data ingestion, validation, preprocessing, feature engineering, training, evaluation, deployment. MLflow tracks experiments. DVC versions datasets.",  # noqa: E501
     },
     {
         "id": "pipe_002",
         "topic": "ml_pipeline",
-        "text": "MLOps applies DevOps to ML: triggered retraining, automated validation gates, canary deployments, automated rollback. Tools: GitHub Actions, Docker, Kubernetes.",
+        "text": "MLOps applies DevOps to ML: triggered retraining, automated validation gates, canary deployments, automated rollback. Tools: GitHub Actions, Docker, Kubernetes.",  # noqa: E501
     },
     {
         "id": "sys_002",
         "topic": "ml_pipeline",
-        "text": "Online learning updates models incrementally without retraining from scratch. Critical when distributions shift over time. Concept drift detection (ADWIN, DDM) can trigger updates.",
+        "text": "Online learning updates models incrementally without retraining from scratch. Critical when distributions shift over time. Concept drift detection (ADWIN, DDM) can trigger updates.",  # noqa: E501
     },
     {
         "id": "drift_001",
         "topic": "monitoring",
-        "text": "Data drift: KS-test for continuous features, chi-squared for categorical, PSI and Jensen-Shannon divergence for distribution shift detection.",
+        "text": "Data drift: KS-test for continuous features, chi-squared for categorical, PSI and Jensen-Shannon divergence for distribution shift detection.",  # noqa: E501
     },
     {
         "id": "drift_002",
         "topic": "monitoring",
-        "text": "Production ML monitoring tracks: prediction distribution, input feature statistics, data quality, model latency (p50/p95/p99), throughput, error rates, and business KPIs.",
+        "text": "Production ML monitoring tracks: prediction distribution, input feature statistics, data quality, model latency (p50/p95/p99), throughput, error rates, and business KPIs.",  # noqa: E501
     },
     {
         "id": "drift_003",
         "topic": "monitoring",
-        "text": "Shadow deployment runs a new model in parallel without serving predictions to users. Validates new model on real traffic before promotion. A/B testing measures business metrics.",
+        "text": "Shadow deployment runs a new model in parallel without serving predictions to users. Validates new model on real traffic before promotion. A/B testing measures business metrics.",  # noqa: E501
     },
     {
         "id": "llm_001",
         "topic": "llm_prompting",
-        "text": "Prompt engineering: zero-shot (task only), few-shot (examples included), chain-of-thought (step-by-step reasoning), ReAct (reasoning + tool use alternating).",
+        "text": "Prompt engineering: zero-shot (task only), few-shot (examples included), chain-of-thought (step-by-step reasoning), ReAct (reasoning + tool use alternating).",  # noqa: E501
     },
     {
         "id": "llm_002",
         "topic": "llm_prompting",
-        "text": "Fine-tuning: full fine-tuning updates all weights. LoRA injects small trainable matrices into attention layers, reducing trainable parameters by 10,000x. QLoRA adds 4-bit quantization.",
+        "text": "Fine-tuning: full fine-tuning updates all weights. LoRA injects small trainable matrices into attention layers, reducing trainable parameters by 10,000x. QLoRA adds 4-bit quantization.",  # noqa: E501
     },
     {
         "id": "llm_003",
         "topic": "llm_prompting",
-        "text": "LLM hallucination: plausible but factually incorrect content. Mitigations: RAG grounds responses in retrieved facts, self-consistency samples multiple completions, calibrated uncertainty expressions.",
+        "text": "LLM hallucination: plausible but factually incorrect content. Mitigations: RAG grounds responses in retrieved facts, self-consistency samples multiple completions, calibrated uncertainty expressions.",  # noqa: E501
     },
     {
         "id": "sys_008",
         "topic": "llm_prompting",
-        "text": "System prompts set persona, constraints, behavioral guidelines for an LLM session. Best practices: specify output format, define uncertainty behavior, set tone. Prompt injection is a production security concern.",
+        "text": "System prompts set persona, constraints, behavioral guidelines for an LLM session. Best practices: specify output format, define uncertainty behavior, set tone. Prompt injection is a production security concern.",  # noqa: E501
     },
     {
         "id": "opt_001",
         "topic": "optimization",
-        "text": "Gradient descent: Batch GD uses full dataset. SGD uses one sample. Mini-batch balances speed and stability. Momentum, RMSprop, and Adam are adaptive optimizers adjusting learning rates per parameter.",
+        "text": "Gradient descent: Batch GD uses full dataset. SGD uses one sample. Mini-batch balances speed and stability. Momentum, RMSprop, and Adam are adaptive optimizers adjusting learning rates per parameter.",  # noqa: E501
     },
     {
         "id": "opt_002",
         "topic": "optimization",
-        "text": "Hyperparameter optimization: Grid search exhaustive. Random search faster. Bayesian optimization builds a surrogate model using Expected Improvement acquisition function.",
+        "text": "Hyperparameter optimization: Grid search exhaustive. Random search faster. Bayesian optimization builds a surrogate model using Expected Improvement acquisition function.",  # noqa: E501
     },
     {
         "id": "sys_010",
         "topic": "optimization",
-        "text": "Learning rate scheduling: step decay, cosine annealing, warm restarts, warmup. Linear warmup over first N steps is critical for transformers to stabilize early training.",
+        "text": "Learning rate scheduling: step decay, cosine annealing, warm restarts, warmup. Linear warmup over first N steps is critical for transformers to stabilize early training.",  # noqa: E501
     },
     {
         "id": "feat_001",
         "topic": "feature_engineering",
-        "text": "Feature engineering: normalization (0-1), standardization (zero mean, unit variance), log transform for skew. Categorical: one-hot, ordinal, target encoding. Temporal: hour, day, rolling statistics.",
+        "text": "Feature engineering: normalization (0-1), standardization (zero mean, unit variance), log transform for skew. Categorical: one-hot, ordinal, target encoding. Temporal: hour, day, rolling statistics.",  # noqa: E501
     },
     {
         "id": "feat_002",
         "topic": "feature_engineering",
-        "text": "Feature selection: filter (correlation, chi-squared, mutual information), wrapper (RFE), embedded (LASSO drives irrelevant weights to zero, tree importances). Reduces dimensionality and overfitting.",
+        "text": "Feature selection: filter (correlation, chi-squared, mutual information), wrapper (RFE), embedded (LASSO drives irrelevant weights to zero, tree importances). Reduces dimensionality and overfitting.",  # noqa: E501
     },
     {
         "id": "sys_005",
         "topic": "feature_engineering",
-        "text": "Interaction features: (response_length x avg_retrieval_score) = quality-weighted length. (session_query_count x follow_up_asked) = engagement depth. (hallucination_risk x query_complexity) = risk under cognitive load.",
+        "text": "Interaction features: (response_length x avg_retrieval_score) = quality-weighted length. (session_query_count x follow_up_asked) = engagement depth. (hallucination_risk x query_complexity) = risk under cognitive load.",  # noqa: E501
     },
     {
         "id": "data_001",
         "topic": "data_engineering",
-        "text": "Data pipelines: ETL extracts, transforms, loads. ELT loads raw then transforms in warehouse. Airflow orchestrates DAGs. Kafka handles real-time event streaming.",
+        "text": "Data pipelines: ETL extracts, transforms, loads. ELT loads raw then transforms in warehouse. Airflow orchestrates DAGs. Kafka handles real-time event streaming.",  # noqa: E501
     },
     {
         "id": "data_002",
         "topic": "data_engineering",
-        "text": "Data quality issues: missing values (impute/drop), duplicates (deduplication), schema violations, outliers (IQR, Z-score), data leakage. Great Expectations and dbt automate checks.",
+        "text": "Data quality issues: missing values (impute/drop), duplicates (deduplication), schema violations, outliers (IQR, Z-score), data leakage. Great Expectations and dbt automate checks.",  # noqa: E501
     },
     {
         "id": "data_003",
         "topic": "data_engineering",
-        "text": "Synthetic data generation: rule-based (define distributions), SMOTE (oversample in feature space), GANs (learn real distribution), LLM-based (prompt to produce realistic examples).",
+        "text": "Synthetic data generation: rule-based (define distributions), SMOTE (oversample in feature space), GANs (learn real distribution), LLM-based (prompt to produce realistic examples).",  # noqa: E501
     },
     {
         "id": "sys_004",
         "topic": "monitoring",
-        "text": "Model cards and datasheets document intended use, limitations, evaluation results, and ethical considerations. Improve transparency and responsible AI practices.",
+        "text": "Model cards and datasheets document intended use, limitations, evaluation results, and ethical considerations. Improve transparency and responsible AI practices.",  # noqa: E501
     },
     {
         "id": "eval_005",
         "topic": "evaluation",
-        "text": "Confusion matrices show TP, TN, FP, FN. Type I error = FP. Type II error = FN. All classification metrics derive from these four cells.",
+        "text": "Confusion matrices show TP, TN, FP, FN. Type I error = FP. Type II error = FN. All classification metrics derive from these four cells.",  # noqa: E501
     },
     {
         "id": "sys_011",
         "topic": "rag",
-        "text": "Document ingestion pipeline for custom knowledge: parse PDF/TXT/CSV → chunk → embed → upsert to ChromaDB. Supports dynamic knowledge base expansion without restarting the system.",
+        "text": "Document ingestion pipeline for custom knowledge: parse PDF/TXT/CSV → chunk → embed → upsert to ChromaDB. Supports dynamic knowledge base expansion without restarting the system.",  # noqa: E501
     },
 ]
 
@@ -1033,9 +1033,9 @@ def generate_query_variants(query: str) -> list[str]:
             max_tokens=150,
         )
         lines = [
-            l.strip()
-            for l in resp.choices[0].message.content.strip().split("\n")
-            if l.strip()
+            line.strip()
+            for line in resp.choices[0].message.content.strip().split("\n")
+            if line.strip()
         ]
         variants = lines[:3] if len(lines) >= 3 else [query]
         if query not in variants:
@@ -1113,20 +1113,20 @@ PROMPT_REGISTRY: dict[str, dict] = {
         "version": "v2_simplified",
         "label": "Simplified",
         "system": "You are a patient AI tutor who explains clearly. " + _GROUNDING,
-        "template": "CONTEXT:\n{context}\n\n{memory}QUESTION: {query}\n\nExplain clearly using the context. Use simple language and bullet points.",
+        "template": "CONTEXT:\n{context}\n\n{memory}QUESTION: {query}\n\nExplain clearly using the context. Use simple language and bullet points.",  # noqa: E501
     },
     "v3_detailed": {
         "version": "v3_detailed",
         "label": "Detailed Structured",
         "system": "You are an expert instructor who gives structured answers. "
         + _GROUNDING,
-        "template": "CONTEXT:\n{context}\n\n{memory}QUESTION: {query}\n\nProvide a structured answer: (1) Direct answer, (2) How it works, (3) Key details from context, (4) Takeaway.",
+        "template": "CONTEXT:\n{context}\n\n{memory}QUESTION: {query}\n\nProvide a structured answer: (1) Direct answer, (2) How it works, (3) Key details from context, (4) Takeaway.",  # noqa: E501
     },
     "v4_socratic": {
         "version": "v4_socratic",
         "label": "Socratic",
         "system": "You are a Socratic tutor. " + _GROUNDING,
-        "template": "CONTEXT:\n{context}\n\n{memory}QUESTION: {query}\n\nAnswer precisely using the context, then ask one follow-up question to check understanding.",
+        "template": "CONTEXT:\n{context}\n\n{memory}QUESTION: {query}\n\nAnswer precisely using the context, then ask one follow-up question to check understanding.",  # noqa: E501
     },
 }
 
@@ -1206,7 +1206,7 @@ def rag_query(
     doc_ids = [d["doc_id"] for d in docs]
     scores = [d.get("dense_score", d["score"]) for d in docs]
     avg_score = round(float(np.mean(scores)), 4) if scores else 0.0
-    context_parts = [f"[Source {i+1}]\n{d['text']}" for i, d in enumerate(docs)]
+    context_parts = [f"[Source {i + 1}]\n{d['text']}" for i, d in enumerate(docs)]
     context = "\n\n---\n\n".join(context_parts)
 
     # Step 3: memory
@@ -1660,7 +1660,7 @@ def build_feature_dict(raw: dict) -> dict:
 
 
 def predict_understanding(features: dict) -> dict:
-    global _ml_model, _opt_threshold, _ml_metrics
+
     if _ml_model is None:
         if not load_model():
             train_model()
@@ -1767,7 +1767,7 @@ def online_predict(features: dict) -> Optional[dict]:
     Get prediction from the online model if it has seen enough samples.
     Returns None if the online model is not yet warmed up (< 10 samples).
     """
-    global _online_query_count
+
     if _online_query_count < 10:
         return None
     model = _get_online_model()
@@ -2236,7 +2236,7 @@ def generate_monitoring_report() -> str:
         return "error: pip install evidently"
     df = load_interactions()
     if len(df) < 40:
-        return "error: need at least 40 real interactions to generate a meaningful drift report — keep chatting and try again"
+        return "error: need at least 40 real interactions to generate a meaningful drift report — keep chatting and try again"  # noqa: E501
     needed = [
         f
         for f in [
