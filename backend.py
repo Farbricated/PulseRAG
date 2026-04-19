@@ -61,11 +61,11 @@ from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.metrics import (
     accuracy_score,
-    f1_score,
-    roc_auc_score,
-    precision_recall_curve,
     classification_report,
     confusion_matrix,
+    f1_score,
+    precision_recall_curve,
+    roc_auc_score,
 )
 from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.pipeline import Pipeline
