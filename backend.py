@@ -18,6 +18,14 @@ Fixes applied vs v4:
   [F14] Unit-testable pure functions separated from side-effectful ones
   [F15] Graceful Groq degradation: returns structured error dict, never raw exception
   [F16] Calibrated threshold via isotonic regression on held-out data
+
+Streamlit Cloud fixes (P-series):
+  [P1]  Cross-encoder disabled by default — set PULSERAG_RERANK=1 env var to enable it.
+        Saves ~300MB RAM on cold start which was causing OOM crash on Streamlit Cloud.
+  [P2]  Bootstrap is sequential (not parallel threads) to avoid simultaneous model-load
+        OOM spike. Embedding + ChromaDB + ML training no longer race for RAM at startup.
+  [P3]  Synthetic training data reduced to 300 samples at bootstrap (was 600).
+  [P4]  GROQ_API_KEY always re-read from env at call-time so Streamlit secrets work.
 """
 
 from __future__ import annotations
@@ -47,10 +55,8 @@ except ImportError:
 
 import chromadb
 from groq import Groq
-from sentence_transformers import SentenceTransformer, CrossEncoder
-from sklearn.calibration import CalibratedClassifierCV
+from sentence_transformers import SentenceTransformer
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
-from sklearn.isotonic import IsotonicRegression
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.metrics import (
     accuracy_score, f1_score, roc_auc_score,
@@ -88,6 +94,10 @@ VERSION          = "5.0.0"
 EMBED_BATCH_SIZE = 64
 
 _DEVICE = os.getenv("PULSERAG_DEVICE", None)
+
+# [P1] Cross-encoder disabled by default to save ~300MB RAM on Streamlit Cloud.
+# Set PULSERAG_RERANK=1 in your environment to enable it (e.g. local Docker/EC2).
+_RERANK_ENABLED = os.getenv("PULSERAG_RERANK", "0") == "1"
 
 # [F3] Extended feature set with 3 interaction features
 FEATURES = [
@@ -281,11 +291,15 @@ def embed(texts: list[str]) -> np.ndarray:
     )
 
 
-def get_cross_encoder() -> Optional[CrossEncoder]:
-    """[F2] Lazy-load cross-encoder for re-ranking."""
+def get_cross_encoder():
+    """[F2][P1] Lazy-load cross-encoder only when PULSERAG_RERANK=1 is set.
+    Skipped by default on Streamlit Cloud to save ~300MB RAM."""
     global _cross_encoder
+    if not _RERANK_ENABLED:
+        return None
     if _cross_encoder is None:
         try:
+            from sentence_transformers import CrossEncoder
             _cross_encoder = CrossEncoder(CROSS_ENCODER_NAME)
         except Exception:
             _cross_encoder = None
@@ -679,7 +693,8 @@ def compute_followup_signals(session_id: str, query: str) -> tuple[int, int]:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _get_groq_client() -> Groq:
-    key = GROQ_API_KEY or os.getenv("GROQ_API_KEY", "")
+    # [P4] Always read at call-time so Streamlit st.secrets injection works correctly
+    key = os.getenv("GROQ_API_KEY", "") or GROQ_API_KEY
     return Groq(api_key=key)
 
 
@@ -1833,27 +1848,27 @@ def run_pipeline(
 # ─────────────────────────────────────────────────────────────────────────────
 
 def bootstrap() -> None:
+    # [P2] Sequential bootstrap — parallel loading caused OOM on Streamlit Cloud
+    # because embedding model + ChromaDB HNSW index + ML training all competed
+    # for RAM simultaneously, crashing the health check before the app started.
     _recalc_avgdl()
 
-    def _embed_and_index():
-        get_embed_model()
-        setup_collection()
+    # Step 1: DB (fast, no RAM cost)
+    init_db()
 
-    def _init_db_thread():
-        init_db()
+    # Step 2: Embedding model + ChromaDB index (biggest RAM spike — do alone)
+    get_embed_model()
+    setup_collection()
 
-    def _ml_thread():
-        if not load_model():
-            df = generate_synthetic_data(600)
-            train_model(df)
-        # Also try to restore the online model from disk
-        load_online_model()
+    # Step 3: ML model (train only if no saved model exists)
+    if not load_model():
+        # [P3] 300 samples at bootstrap (was 600) — sufficient for a good initial model
+        # and saves ~2s + RAM during cold start. CI uses full 600 via generate_synthetic_data(600).
+        df = generate_synthetic_data(300)
+        train_model(df)
 
-    with ThreadPoolExecutor(max_workers=3) as ex:
-        f1 = ex.submit(_embed_and_index)
-        f2 = ex.submit(_init_db_thread)
-        f3 = ex.submit(_ml_thread)
-        f1.result(); f2.result(); f3.result()
+    # Step 4: Restore online model if it was persisted
+    load_online_model()
 
 
 if __name__ == "__main__":

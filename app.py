@@ -33,7 +33,15 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+# Read key from st.secrets first (Streamlit Cloud), fall back to env/.env
+# MUST happen after `import streamlit as st` and before set_page_config check
+def _get_api_key() -> str:
+    try:
+        return st.secrets["GROQ_API_KEY"]
+    except Exception:
+        return os.getenv("GROQ_API_KEY", "")
+
+GROQ_API_KEY = _get_api_key()
 
 st.set_page_config(
     page_title="PulseRAG",
@@ -152,13 +160,17 @@ hr{border:none;border-top:1px solid var(--bd)!important;margin:20px 0!important}
 if not GROQ_API_KEY:
     st.markdown("""
     <div style="display:flex;align-items:center;justify-content:center;min-height:80vh">
-      <div style="background:var(--b1);border:1px solid var(--bd2);border-radius:var(--r3);padding:40px 48px;max-width:480px;text-align:center">
+      <div style="background:var(--b1);border:1px solid var(--bd2);border-radius:var(--r3);padding:40px 48px;max-width:520px;text-align:center">
         <div style="font-family:var(--m);font-size:18px;color:var(--t1);margin-bottom:6px">Pulse<span style="color:#818cf8">RAG</span></div>
-        <div style="font-size:13px;color:var(--t3);margin-bottom:28px;line-height:1.7">Set your Groq API key in a <code style="color:var(--acc2);background:var(--b2);padding:1px 5px;border-radius:3px">.env</code> file then restart.</div>
+        <div style="font-size:13px;color:var(--t3);margin-bottom:28px;line-height:1.7">
+          Set your Groq API key using one of the methods below, then restart.
+        </div>
         <div style="background:var(--b2);border:1px solid var(--bd);border-radius:var(--r2);padding:16px 20px;text-align:left;font-family:var(--m);font-size:12px;line-height:2.2">
-          <span style="color:var(--t3)"># .env</span><br>
+          <span style="color:var(--t3)"># Streamlit Cloud → App Settings → Secrets</span><br>
+          <span style="color:var(--acc2)">GROQ_API_KEY</span> = <span style="color:var(--ok)">"gsk_your_key_here"</span><br><br>
+          <span style="color:var(--t3)"># Local → .env file</span><br>
           <span style="color:var(--acc2)">GROQ_API_KEY</span>=<span style="color:var(--ok)">gsk_your_key_here</span><br><br>
-          <span style="color:var(--t3)"># run</span><br>
+          <span style="color:var(--t3)"># Then run</span><br>
           <span style="color:var(--t1)">streamlit run app.py</span>
         </div>
         <div style="margin-top:16px;font-size:12px;color:var(--t3)">Free key → console.groq.com</div>
@@ -178,7 +190,7 @@ def _boot(key: str):
     return bk
 
 bk = _boot(GROQ_API_KEY)
-bk.GROQ_API_KEY = GROQ_API_KEY
+bk.GROQ_API_KEY = GROQ_API_KEY  # keep module-level var in sync after cache restore
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SESSION STATE
