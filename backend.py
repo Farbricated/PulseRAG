@@ -2211,11 +2211,32 @@ def smart_chunk(text: str, max_chars: int = 800, overlap: int = 100) -> list[str
                     else:
                         if current:
                             chunks.append(current)
-                        current = (
-                            (current[-overlap:] + " " + sent).strip()
-                            if current
-                            else sent
-                        )
+                            current = (
+                                current[-overlap:].strip()
+                                if current and overlap > 0
+                                else ""
+                            )
+
+                        temp_sent = (current + " " + sent).strip() if current else sent
+                        if len(temp_sent) <= max_chars:
+                            current = temp_sent
+                        else:
+                            words = temp_sent.split()
+                            current = ""
+                            for w in words:
+                                if len(current) + len(w) + 1 <= max_chars:
+                                    current = (
+                                        (current + " " + w).strip() if current else w
+                                    )
+                                else:
+                                    if current:
+                                        chunks.append(current)
+                                    if len(w) > max_chars:
+                                        for i in range(0, len(w), max_chars):
+                                            chunks.append(w[i : i + max_chars])
+                                        current = ""
+                                    else:
+                                        current = w
     if current:
         chunks.append(current)
     return [c for c in chunks if c.strip()]

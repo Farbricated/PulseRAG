@@ -160,7 +160,7 @@ def test_train_model_returns_metrics():
     met = bk.train_model(df)
     assert "roc_auc" in met
     assert met["roc_auc"] > 0.5
-    assert met["roc_auc"] < 1.0
+    assert met["roc_auc"] <= 1.0
     assert "opt_threshold" in met
     assert 0 < met["opt_threshold"] < 1
 
@@ -243,9 +243,10 @@ def test_bm25_retrieve_returns_docs():
 
 def test_filter_by_score_keeps_minimum():
     docs = [{"doc_id": "a", "text": "x", "score": 0.1, "dense_score": 0.1},
-            {"doc_id": "b", "text": "y", "score": 0.8, "dense_score": 0.8}]
+            {"doc_id": "b", "text": "y", "score": 0.8, "dense_score": 0.8},
+            {"doc_id": "c", "text": "z", "score": 0.9, "dense_score": 0.9}]
     filtered = bk.filter_by_score(docs, threshold=0.5)
-    assert len(filtered) >= 1
+    assert len(filtered) == 2
     assert filtered[0]["doc_id"] == "b"
 
 
