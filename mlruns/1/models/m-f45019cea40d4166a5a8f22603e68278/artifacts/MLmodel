@@ -1,0 +1,23 @@
+artifact_path: file:D:/Akarsh all/Pratical/PulseRAG/mlruns/1/models/m-f45019cea40d4166a5a8f22603e68278/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.12
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+    skops_trusted_types: null
+mlflow_version: 3.11.1
+model_id: m-f45019cea40d4166a5a8f22603e68278
+model_size_bytes: 1790
+model_uuid: m-f45019cea40d4166a5a8f22603e68278
+prompts: null
+run_id: b4442de4c3e64f40827448dedbd2a31b
+utc_time_created: '2026-04-19 03:40:53.022428'
